@@ -1,4 +1,4 @@
-# gocore
+# gotermstyle
 
 The house terminal style for the Go command-line tools — palette, section
 header, help grammar, and the rules about when any of it is emitted at all.
@@ -41,7 +41,7 @@ including the ones that contradict your own, invisibly to any source grep.
 
 | Language | Library | Lives in |
 | --- | --- | --- |
-| Go | `gocore` | this repo |
+| Go | `gotermstyle` | this repo |
 | Python | `appcore.formatting` | `~/dotfiles/appcore/` |
 | bash | `formatting.sh` + `colors.sh` | `~/dotfiles/configs/common/.local/shell/` |
 

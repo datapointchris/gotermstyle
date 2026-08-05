@@ -1,4 +1,4 @@
-// Package gocore is the house terminal style for the Go command-line tools.
+// Package gotermstyle is the house terminal style for the Go command-line tools.
 //
 // It is the Go counterpart to two things that already exist: dotfiles'
 // appcore/formatting.py for the Python apps, and ~/.local/shell/formatting.sh
@@ -30,4 +30,4 @@
 //
 // Scaffolded, not implemented. The design, the measurements behind it, and the
 // libraries that were considered and rejected are in .planning/design.md.
-package gocore
+package gotermstyle

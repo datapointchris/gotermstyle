@@ -1,4 +1,4 @@
-# gocore — Claude Code instructions
+# gotermstyle — Claude Code instructions
 
 A Go library, not a CLI. No `main` package, nothing to install; it ships as git
 tags and is consumed by the Go tools in `~/tools/` and the `cli/` modules inside
