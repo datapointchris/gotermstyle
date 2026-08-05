@@ -15,6 +15,12 @@ repo exists because of a decision, not as a blank slate.
   must not inherit a Go floor. Terminal detection is `os.Stat` plus
   `os.ModeCharDevice` (the idiom `goselfupdate/autoupdate` already uses), never
   `golang.org/x/term`.
+- **The `go.mod` floor matches the fleet, not the lowest version the code
+  needs.** A library would ideally floor lower, but the generated CI reads the
+  floor from `go.mod`, pins `GOTOOLCHAIN=local`, and then installs golangci-lint,
+  which has its own minimum — so a lower floor fails Lint on a repo whose code is
+  fine. This was scaffolded at 1.23 and failed exactly that way before matching
+  `goselfupdate`. See `~/dev/standards/go.md` § "Go version floor".
 - **The palette matches `~/dotfiles`.** The exact codes are in
   `appcore/formatting.py` and `configs/common/.local/shell/colors.sh`. Changing
   one without the other two is the failure this library exists to prevent — the
