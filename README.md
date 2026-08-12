@@ -33,7 +33,7 @@ and the specific reason each was rejected are in the planning doc.
 
 The counter-example that settled it: Typer's Rich renderer emits 23–38 dim
 sequences into every help screen on this fleet, none of them in any source file,
-while `~/dev/standards/cli-design.md` bans dim outright for being unreadable on
+while `standards/cli-design.md` bans dim outright for being unreadable on
 half the terminal themes in use. Adopting a library means adopting its opinions,
 including the ones that contradict your own, invisibly to any source grep.
 
@@ -53,7 +53,7 @@ is a change to all three.
 - **No third-party dependencies**, matching `goselfupdate`. Terminal detection
   is `os.Stat` plus `os.ModeCharDevice`, not `golang.org/x/term`, so importing
   this costs a consumer nothing and moves no Go floor.
-- **No dim.** `~/dev/standards/cli-design.md` § "Never use `[dim]`".
+- **No dim.** `standards/cli-design.md` § "Never use `[dim]`".
 - **Colour is emitted only where something will render it.** `NO_COLOR` is the
   user's preference and wins; `FORCE_COLOR` overrides the terminal detection.
 

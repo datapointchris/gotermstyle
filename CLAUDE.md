@@ -20,12 +20,12 @@ repo exists because of a decision, not as a blank slate.
   floor from `go.mod`, pins `GOTOOLCHAIN=local`, and then installs golangci-lint,
   which has its own minimum — so a lower floor fails Lint on a repo whose code is
   fine. This was scaffolded at 1.23 and failed exactly that way before matching
-  `goselfupdate`. See `~/dev/standards/go.md` § "Go version floor".
+  `goselfupdate`. See `standards/go.md` § "Go version floor".
 - **The palette matches `~/dotfiles`.** The exact codes are in
   `appcore/formatting.py` and `configs/common/.local/shell/colors.sh`. Changing
   one without the other two is the failure this library exists to prevent — the
   point is that three screens on one `PATH` look like one product.
-- **No dim, ever.** `~/dev/standards/cli-design.md` § "Never use `[dim]`".
+- **No dim, ever.** `standards/cli-design.md` § "Never use `[dim]`".
 - **Colour resolves once, and only where it will be rendered.** `NO_COLOR`
   outranks `FORCE_COLOR`: the first is the user's preference, the second only
   overrides the terminal detection.
@@ -36,8 +36,8 @@ repo exists because of a decision, not as a blank slate.
 
 ## Rules that live elsewhere
 
-`~/dev/standards/go.md` for layout, gofumpt, golangci-lint v2, and the module
-rules. `~/dev/standards/cli-design.md` for what a help screen must contain —
+`standards/go.md` for layout, gofumpt, golangci-lint v2, and the module
+rules. `standards/cli-design.md` for what a help screen must contain —
 this library renders that grammar and does not redefine it.
 
 ## Sanctioned exceptions
