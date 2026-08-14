@@ -3,7 +3,7 @@
 The house terminal style for the Go command-line tools — palette, section
 header, help grammar, and the rules about when any of it is emitted at all.
 
-Zero third-party dependencies.
+Zero third-party dependencies, by this repo's own choice.
 
 ## Using it
 
@@ -106,9 +106,14 @@ rendered output is identical.
 
 ## Constraints
 
-- **No third-party dependencies**, matching `goselfupdate`. Terminal detection
-  is `os.Stat` plus `os.ModeCharDevice`, not `golang.org/x/term`, so importing
-  this costs a consumer nothing and moves no Go floor.
+- **No third-party dependencies.** This is the repo's choice rather than a
+  fleet rule — `standards/repo-structure.md` retired the blanket ban, and what
+  binds now is containment: a CLI frontend lives in its own package so a
+  consumer importing only the core inherits nothing. The choice stands on its
+  own here because everything this does is a string. Terminal detection is
+  `os.Stat` plus `os.ModeCharDevice` rather than `golang.org/x/term`, and
+  `Columns` reaches `TIOCGWINSZ` through stdlib `syscall`, so importing this
+  downloads nothing and moves no Go floor.
 - **No dim.** `standards/cli-design.md` § "Never use `[dim]`".
 - **Color is emitted only where something will render it.** `NO_COLOR` is the
   user's preference and wins; `FORCE_COLOR` overrides the terminal detection.

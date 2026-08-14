@@ -10,11 +10,22 @@ repo exists because of a decision, not as a blank slate.
 
 ## Constraints that must not regress
 
-- **Zero third-party dependencies.** The same constraint `goselfupdate` holds
-  and for the same reason: a consumer importing this must download nothing and
-  must not inherit a Go floor. Terminal detection is `os.Stat` plus
-  `os.ModeCharDevice` (the idiom `goselfupdate/autoupdate` already uses), never
-  `golang.org/x/term`.
+- **Zero third-party dependencies — this repo's choice, not a fleet rule.**
+  `repo-structure.md` retired the blanket ban and what binds now is
+  *containment*: a CLI frontend lives in its own package so a consumer importing
+  only the core inherits nothing. `cobrahelp/` is that split here.
+
+  The choice stands on its own anyway. This package exists so a Go screen
+  matches its Python and bash neighbors byte for byte, and everything it needs
+  to do that is a string. Terminal detection is `os.Stat` plus
+  `os.ModeCharDevice` (the idiom `goselfupdate/autoupdate` already uses) rather
+  than `golang.org/x/term`, and `Columns` reaches `TIOCGWINSZ` through stdlib
+  `syscall`, so importing this downloads nothing and moves no Go floor.
+
+  What it gives up is wide-rune and grapheme-cluster width, which `lipgloss`
+  handles and this does not. That is a deliberate acceptance, not an oversight —
+  and `lipgloss` is a registered exemplar here, so reach for it in a repo that
+  needs real layout rather than pretending this competes.
 - **The `go.mod` floor matches the fleet, not the lowest version the code
   needs.** A library would ideally floor lower, but the generated CI reads the
   floor from `go.mod`, pins `GOTOOLCHAIN=local`, and then installs golangci-lint,
