@@ -28,12 +28,10 @@ repo exists because of a decision, not as a blank slate.
   handles and this does not. That is a deliberate acceptance, not an oversight —
   and `lipgloss` is a registered exemplar here, so reach for it in a repo that
   needs real layout rather than pretending this competes.
-- **The `go.mod` floor matches the fleet, not the lowest version the code
-  needs.** A library would ideally floor lower, but the generated CI reads the
-  floor from `go.mod`, pins `GOTOOLCHAIN=local`, and then installs golangci-lint,
-  which has its own minimum — so a lower floor fails Lint on a repo whose code is
-  fine. This was scaffolded at 1.23 and failed exactly that way before matching
-  `goselfupdate`. See `standards/go.md` § "Go version floor".
+- **The `go.mod` floor matches the fleet, not the lowest version the code needs.**
+  Why a library cannot floor below the generated CI's bottom is `standards/go.md`
+  § "Go version floor, and the toolchain that is not the same question". This repo
+  was scaffolded at 1.23 and failed exactly that way before matching `goselfupdate`.
 - **The palette matches `~/dotfiles`.** The exact codes are the `Color` enum in
   `src/dotfiles/declaration.py` and `configs/common/.local/shell/colors.sh`.
   Changing one without the other two is the failure this library exists to
@@ -55,13 +53,12 @@ this library renders that grammar and does not redefine it.
 
 ## Sanctioned exceptions
 
-- **No goreleaser.** There is no binary to build, upload or install. A consumer
-  resolves this by module path and tag.
+- **No goreleaser**, per `standards/release.md` § "Go — go-semantic-release +
+  goreleaser", which drops the goreleaser half for a library.
 
 `release.yml` is not an exception and the repo has one. A tag is exactly what a
-consumer resolves, so something has to cut it — `goselfupdate` and
-`pytermstyle` both cut theirs the same way, and gotermstyle went unreleasable
-for a week while this file said the opposite.
+consumer resolves, so something has to cut it — gotermstyle went unreleasable for
+a week while this file said the opposite.
 
 The tag is cut from `main` by `go-semantic-release`, after a build, vet and
 `-race` test on ubuntu, macOS and windows. Windows is in that matrix because it
@@ -69,9 +66,9 @@ is the one platform this package cannot be exercised on locally: `Columns`
 reaches `TIOCGWINSZ` through stdlib `syscall`, which windows does not have, so
 the fallback sits behind a build tag that nothing else proves.
 
-`allow-initial-development-versions` holds the line at 0.x. Dropping it is how
-`bbkt`, `sess` and `bashselfupdate` each shipped 1.0.0 as their first automated
-release; for a library that is a compatibility promise, so it stays deliberate.
+`allow-initial-development-versions` holds the line at 0.x, per `standards/release.md`
+§ "On 0.x, go-semantic-release majors on *everything* unless told not to". For a
+library a 1.0.0 is a compatibility promise, so staying on 0.x is deliberate here.
 
 ## Never write the breaking-change trailer in a commit message
 
