@@ -13,7 +13,9 @@ repo exists because of a decision, not as a blank slate.
 - **Zero third-party dependencies — this repo's choice, not a fleet rule.**
   `repo-structure.md` retired the blanket ban and what binds now is
   *containment*: a CLI frontend lives in its own package so a consumer importing
-  only the core inherits nothing. `cobrahelp/` is that split here.
+  only the core inherits nothing. There is nothing to contain here — the repo is
+  flat, has no subpackages, and `go.mod` declares no requirements at all, so the
+  containment rule is satisfied by having nothing to split off.
 
   The choice stands on its own anyway. This package exists so a Go screen
   matches its Python and bash neighbors byte for byte, and everything it needs
@@ -32,10 +34,10 @@ repo exists because of a decision, not as a blank slate.
   which has its own minimum — so a lower floor fails Lint on a repo whose code is
   fine. This was scaffolded at 1.23 and failed exactly that way before matching
   `goselfupdate`. See `standards/go.md` § "Go version floor".
-- **The palette matches `~/dotfiles`.** The exact codes are in
-  `appcore/formatting.py` and `configs/common/.local/shell/colors.sh`. Changing
-  one without the other two is the failure this library exists to prevent — the
-  point is that three screens on one `PATH` look like one product.
+- **The palette matches `~/dotfiles`.** The exact codes are the `Color` enum in
+  `src/dotfiles/declaration.py` and `configs/common/.local/shell/colors.sh`.
+  Changing one without the other two is the failure this library exists to
+  prevent — the point is that three screens on one `PATH` look like one product.
 - **No dim, ever.** `standards/cli-design.md` § "Never use `[dim]`".
 - **Colour resolves once, and only where it will be rendered.** `NO_COLOR`
   outranks `FORCE_COLOR`: the first is the user's preference, the second only
