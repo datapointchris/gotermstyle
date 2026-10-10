@@ -50,8 +50,10 @@ hand for the same reason: `text/tabwriter` counts an escape sequence as visible
 width, so one colored cell shifts every column after it.
 
 ```go
-fmt.Fprintf(w, "%s  %s\n", p.Cyan(pad(name, width)), address)  // wrong
-fmt.Fprintf(w, "%s  %s\n", p.Cyan(name)+spaces(width-len(name)), address)
+fmt.Fprintf(w, "%-*s  %s\n", width, p.Cyan(name), address) // wrong: the width counts the escape
+
+gap := strings.Repeat(" ", width-utf8.RuneCountInString(name))
+fmt.Fprintf(w, "%s%s  %s\n", p.Cyan(name), gap, address)
 ```
 
 ## Why this exists
@@ -76,8 +78,8 @@ Not because none is good enough. `lipgloss` is Rich-class and is a registered
 exemplar here — it has tables, lists, layers and genuinely ANSI-aware width,
 which is more than this package does.
 
-The value being bought is narrower: a Go screen matching its Python and bash
-neighbors on `PATH`, byte for byte, at zero dependency cost. The alternatives
+The value being bought is narrower: a Go screen that looks the same as its
+Python and bash neighbors on `PATH`, at zero dependency cost. The alternatives
 considered and the reason each was rejected are in the planning doc.
 
 The counter-example that settled it: Typer's Rich renderer emits 23–38 dim
@@ -94,15 +96,19 @@ opinions where no source grep will find them.
 | Python | `pytermstyle` | `~/tools/pytermstyle` |
 | bash | `formatting.sh` + `colors.sh` | `~/dotfiles/configs/common/.local/shell/` |
 
-The three emit the same escape codes for the same roles, and that is verified
-against rendered bytes rather than against the source constants. A change to the
+The three emit the same escape codes for the same roles. The Go tests assert each
+code as a literal, and no test reads the other two libraries. A change to the
 palette is a change to all three.
+
+The three draw the same screen, not the same bytes. pytermstyle and
+`formatting.sh` open a help row's color before its two-space indent, and Go
+opens it after. They also write a reset on a continuation row, which opens no
+color, and Go writes none.
 
 The API differs from the Python in one place. pytermstyle and `formatting.sh`
 keep the buffered rows and the section counter in globals, which costs
 pytermstyle a reset helper its tests must call. Go runs its tests in one process
-and its programs concurrently, so that state lives on a `Screen` here. The
-rendered output is identical.
+and its programs concurrently, so that state lives on a `Screen` here.
 
 ## Constraints
 
@@ -117,9 +123,10 @@ rendered output is identical.
 - **No dim.** `standards/cli-design.md` § "Never use `[dim]`".
 - **Color is emitted only where something will render it.** `NO_COLOR` is the
   user's preference and wins; `FORCE_COLOR` overrides the terminal detection.
-- **Widths are measured in runes**, which is where this improves on the Python
-  it ports. Wide runes and grapheme clusters are still assumed one column — the
-  one thing `lipgloss` would buy, and a deliberate acceptance.
+- **Widths are measured in runes**, the unit pytermstyle's `len` counts on a
+  `str`, so a multibyte name aligns the same in both. Both assume a wide rune or
+  a grapheme cluster is one column. That is the one thing `lipgloss` would buy,
+  and a deliberate acceptance.
 
 ## Licence
 

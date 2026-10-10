@@ -18,8 +18,9 @@ repo exists because of a decision, not as a blank slate.
   containment rule is satisfied by having nothing to split off.
 
   The choice stands on its own anyway. This package exists so a Go screen
-  matches its Python and bash neighbors byte for byte, and everything it needs
-  to do that is a string. Terminal detection is `os.Stat` plus
+  looks the same as its Python and bash neighbors, and everything it needs
+  to do that is a string. The bytes differ, and the README's "Relationship to
+  the other two" says where. Terminal detection is `os.Stat` plus
   `os.ModeCharDevice` (the idiom `goselfupdate/autoupdate` already uses) rather
   than `golang.org/x/term`, and `Columns` reaches `TIOCGWINSZ` through stdlib
   `syscall`, so importing this downloads nothing and moves no Go floor.

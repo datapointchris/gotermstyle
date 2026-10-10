@@ -1,11 +1,11 @@
 // Package gotermstyle is the house terminal style for the Go command-line tools.
 //
-// It is the Go counterpart to two things that already exist: dotfiles'
-// appcore/formatting.py for the Python apps, and ~/.local/shell/formatting.sh
-// for the bash ones. The parallel is the point — a Go screen, a Python screen
-// and a bash screen sitting next to each other on PATH should be
-// indistinguishable, which is a property no third-party styling library can
-// provide, because each brings its own aesthetic.
+// It is the Go counterpart to two things that already exist: pytermstyle
+// (https://github.com/datapointchris/pytermstyle) for the Python tools, and
+// ~/.local/shell/formatting.sh for the bash ones. The parallel is the point —
+// a Go screen, a Python screen and a bash screen sitting next to each other on
+// PATH should be indistinguishable, which is a property no third-party styling
+// library can provide, because each brings its own aesthetic.
 //
 // # Scope
 //
@@ -56,7 +56,7 @@
 // in globals, which is affordable in a one-shot CLI and costs pytermstyle a
 // reset helper its tests have to call. Go runs its tests in one process and its
 // programs concurrently, so that state lives on a Screen here. The rendered
-// output is identical; only its owner differs.
+// screen is the same; only the state's owner differs.
 //
 // The design, the measurements behind it, and the libraries that were
 // considered and rejected are in .planning/design.md.
