@@ -12,8 +12,8 @@ import (
 // It carries the buffered rows and the section counter that pytermstyle and
 // formatting.sh both keep in globals. Go runs its tests in one process and its
 // programs concurrently, so a value is the same code without the reset helper
-// those two need, and makes concurrent use a non-question. The output is
-// identical; only where the state lives differs.
+// those two need, and makes concurrent use a non-question. It draws the screen
+// those two draw; only where the state lives differs.
 type Screen struct {
 	w       io.Writer
 	palette Palette
@@ -127,9 +127,9 @@ func (s *Screen) HelpEnd() {
 //
 // The width is measured on the uncolored text and the color applied after. A
 // padded field counts the escape bytes otherwise, and pushes every description
-// right by the length of the escape. Measured in runes rather than bytes, which
-// is where this improves on the Python: an em-dash is three bytes and one
-// column, so a byte count slides the row two places left.
+// right by the length of the escape. The width counts runes, the unit Python's
+// len counts on a str. An em-dash is three bytes and one column, so a byte
+// count would slide its row two places left.
 func (s *Screen) flush() {
 	if len(s.pending) == 0 {
 		return
@@ -170,10 +170,12 @@ func (s *Screen) flush() {
 }
 
 // left is the padded column's content: the name and its args together, because
-// the name is colored and the args are not, and they share one column.
+// the name is colored and the args are not, and they share one column. It is
+// exactly what flush writes ahead of the pad, including the space a
+// continuation row writes before its args.
 func (r row) left() string {
 	if r.args == "" {
 		return r.name
 	}
-	return strings.TrimSpace(r.name + " " + r.args)
+	return r.name + " " + r.args
 }

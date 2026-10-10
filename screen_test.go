@@ -83,8 +83,9 @@ func TestRowsStillAlignWhenColorIsOff(t *testing.T) {
 }
 
 func TestAMultiByteNameDoesNotShiftTheDescription(t *testing.T) {
-	// Where this improves on the Python it ports. An em-dash is three bytes and
-	// one column, so a byte-measured width slides the row two places left.
+	// Widths count runes, the unit pytermstyle's len counts on a str. An
+	// em-dash is three bytes and one column, so a byte-measured width slides
+	// the row two places left.
 	lines := render(t, func(s *Screen) {
 		s.HelpSection("Commands")
 		s.HelpRow("a—b", "", "first")
@@ -112,6 +113,22 @@ func TestArgsShareTheNameColumn(t *testing.T) {
 	}
 	if !strings.HasSuffix(row, "described") {
 		t.Errorf("row ended %q", row)
+	}
+}
+
+func TestAContinuationRowWithArgsAlignsItsDescription(t *testing.T) {
+	// The row writes a space between its empty name and its args, so the
+	// column it pads holds that space too.
+	lines := render(t, func(s *Screen) {
+		s.HelpSection("Commands")
+		s.HelpRow("named", "<arg>", "first")
+		s.HelpRow("", "<more>", "second")
+		s.HelpEnd()
+	})
+	first := column(t, plain(lineWith(t, lines, "first")), "first")
+	second := column(t, plain(lineWith(t, lines, "second")), "second")
+	if first != second {
+		t.Errorf("descriptions start at %d and %d:\n%s", first, second, strings.Join(lines, "\n"))
 	}
 }
 
