@@ -4,9 +4,10 @@ A Go library, not a CLI. No `main` package, nothing to install; it ships as git
 tags and is consumed by the Go tools in `~/tools/` and the `cli/` modules inside
 the webapps.
 
-Read `.planning/design.md` before writing any code here. The palette, the
-rejected alternatives, and the reason each was rejected are settled there — this
-repo exists because of a decision, not as a blank slate.
+Read the README's "Why this exists" and "Why not a third-party library" before
+writing any code here. The palette, the rejected alternatives, and the reason
+each was rejected are settled there — this repo exists because of a decision,
+not as a blank slate.
 
 ## Constraints that must not regress
 

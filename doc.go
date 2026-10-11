@@ -58,6 +58,5 @@
 // programs concurrently, so that state lives on a Screen here. The rendered
 // screen is the same; only the state's owner differs.
 //
-// The design, the measurements behind it, and the libraries that were
-// considered and rejected are in .planning/design.md.
+// The libraries that were considered and rejected, and why, are in the README.
 package gotermstyle
