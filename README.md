@@ -79,8 +79,20 @@ exemplar here — it has tables, lists, layers and genuinely ANSI-aware width,
 which is more than this package does.
 
 The value being bought is narrower: a Go screen that looks the same as its
-Python and bash neighbors on `PATH`, at zero dependency cost. The alternatives
-considered and the reason each was rejected are in the planning doc.
+Python and bash neighbors on `PATH`, at zero dependency cost. Three
+alternatives were weighed against that:
+
+- **`charmbracelet/fang`** wants to own command execution, which a CLI with a
+  self-update wrapper around `ExecuteContext` already does. Its theme is Charm's
+  house style on lipgloss adaptive colors, a different model from fixed ANSI
+  codes. It also replaces any help template a consumer has overridden, and it
+  calls itself experimental.
+- **`ivanpirog/coloredcobra`** is the closest drop-in and loses the least. It
+  patches cobra's usage template, which a consumer may already patch, and it
+  does nothing for grouping or row width. Two things mutating one template that
+  cobra is free to change is worse than one thing owned outright.
+- **lipgloss by hand** gives the most control for the most code. Its value here
+  would be wide-rune width alone.
 
 The counter-example that settled it: Typer's Rich renderer emits 23–38 dim
 sequences into every help screen on this fleet, none of them in any source file,
