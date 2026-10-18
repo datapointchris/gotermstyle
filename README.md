@@ -169,7 +169,8 @@ more than a bare ellipsis.
 `Columns` reads `$COLUMNS` first, then the terminal on stdout, then
 `DefaultColumns`. That is the order Python's `shutil.get_terminal_size` uses.
 The terminal query is a `TIOCGWINSZ` ioctl through the standard library's
-`syscall`. Off unix there is no query, so `$COLUMNS` or the default answers.
+`syscall`. It runs on Linux, macOS and the BSDs, Android and iOS included.
+Everywhere else `$COLUMNS` or the default answers.
 
 Pad a colored column by hand. `text/tabwriter` counts an escape sequence as
 visible width, so one colored cell shifts every column after it. A padded
