@@ -3,10 +3,10 @@
 // It is the Go counterpart to two things that already exist: pytermstyle
 // (https://github.com/datapointchris/pytermstyle) for the Python tools, and
 // formatting.sh for the bash ones. The README says where each lives. The
-// parallel is the point —
-// a Go screen, a Python screen and a bash screen sitting next to each other on
-// PATH should be indistinguishable, which is a property no third-party styling
-// library can provide, because each brings its own aesthetic.
+// parallel is the point — a Go screen, a Python screen and a bash screen
+// sitting next to each other on PATH should be indistinguishable, which is a
+// property no third-party styling library can provide, because each brings its
+// own aesthetic.
 //
 // # Scope
 //

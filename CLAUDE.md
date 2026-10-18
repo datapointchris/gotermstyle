@@ -80,7 +80,8 @@ a 1.0.0 is a compatibility promise, so staying on 0.x is deliberate here.
 ## Never write the breaking-change trailer in a commit message
 
 The words `BREAKING CHANGE` — either number, colon or not, subject or body — cut a major release
-here, and a major on this repo is an outage rather than a version. `commit-analyzer-cz` matches
+once this repo is past 0.x, and a major from v1 on is an outage rather than a version. On 0.x,
+`allow-initial-development-versions` cuts them as a minor. `commit-analyzer-cz` matches
 them unanchored against the raw message and ORs the result with the configured major rules, so
 `.semrelrc` cannot stop it and it majors even a `fix:` commit.
 
@@ -92,5 +93,7 @@ the offending commit re-cuts the major on every push until a tag above it takes 
 **The ban covers a commit that merely discusses the trailer.** One explaining this exact caveat cut
 a fresh major on push. Name it some other way — "that marker" — and never quote it.
 
-Deliberate majors use `chore(release-major)`, the one subject the release workflow's `.semrelrc`
-leaves as a major.
+The release workflow reads this repo's own `.semrelrc`, and there is none, so no commit subject
+maps to a major. Reaching 1.0 is dropping `allow-initial-development-versions`, and v1 needs no
+path suffix. A deliberate v2 or later needs a `.semrelrc` mapping `chore(release-major)` to a
+major, and the same release adds `/v2` to the module path.
