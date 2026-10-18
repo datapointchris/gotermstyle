@@ -188,6 +188,28 @@ aligns the same here as in pytermstyle. Both assume a wide rune or a grapheme
 cluster is one column, so CJK and emoji misalign. That is the one thing
 lipgloss would buy, and this package accepts the gap deliberately.
 
+## `cobrahelp` — one call renders every screen of a cobra tree
+
+```go
+import "github.com/datapointchris/gotermstyle/cobrahelp"
+
+cobrahelp.Install(root)
+```
+
+Every screen then says what the command is, and lists every command a caller
+can run beneath it. Each row is spelled from the screen's own command down to
+the leaf, arguments included, so a command three levels down is on the root
+rather than three screens away. The examples and flags follow. A section is a
+group the command declares with `AddGroup`, and commands keep the order the
+tree adds them, so `Install` turns off cobra's alphabetical sorting. A command
+no group claims sits under "Other commands". Descriptions wrap at 80 columns,
+and a command line wider than 40 sits alone with its description beneath.
+
+It replaces cobra's help and usage templates outright rather than patching
+their rows. Cobra's template gives a namespace a `Usage: <cmd> [command]`
+block, which a first-time reader takes for the answer, and puts the examples
+above the commands.
+
 ## Why this exists — cobra renders help with no notion of style
 
 A Go tool on cobra prints its help monochrome. A Python tool on Typer and Rich

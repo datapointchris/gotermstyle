@@ -10,20 +10,20 @@ not as a blank slate.
 
 ## Constraints that must not regress
 
-- **Zero third-party dependencies — this repo's own choice.** The general rule
-  for a Go library is *containment*: a CLI frontend lives in its own package so
-  a consumer importing only the core inherits nothing. There is nothing to
-  contain here — the repo is flat, has no subpackages, and `go.mod` declares no
-  requirements at all, so containment is satisfied by having nothing to split
-  off.
+- **The root package imports the standard library alone — this repo's own
+  choice.** The general rule for a Go library is *containment*: a CLI frontend
+  lives in its own package so a consumer importing only the core inherits
+  nothing. `cobrahelp/` is that frontend. It is the one package that imports
+  cobra and pflag, and the only requirements in `go.mod` are its. A tool
+  importing the root package compiles neither.
 
-  The choice stands on its own anyway. This package exists so a Go screen
+  The root's choice stands on its own. This package exists so a Go screen
   looks the same as its Python and bash neighbors, and everything it needs
   to do that is a string. The bytes differ, and the README's "Relationship to
   the other two" says where. Terminal detection is `os.Stat` plus
   `os.ModeCharDevice` rather than `golang.org/x/term`, and `Columns` reaches
-  `TIOCGWINSZ` through stdlib `syscall`, so importing this downloads no other
-  module.
+  `TIOCGWINSZ` through stdlib `syscall`, so the root package builds no other
+  module. Nothing outside `cobrahelp/` imports cobra.
 
   What it gives up is wide-rune and grapheme-cluster width, which `lipgloss`
   handles and this does not. That is a deliberate acceptance, not an oversight.

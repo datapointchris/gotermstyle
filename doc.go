@@ -22,11 +22,15 @@
 //
 // # Dependencies
 //
-// None, and that is a constraint rather than a coincidence. Terminal detection
-// is os.Stat plus os.ModeCharDevice, not golang.org/x/term, so a tool importing
-// this downloads no other module. The go line in this module's go.mod does
-// become the importer's floor, and go get raises a lower one to match. This
-// prints it:
+// None in this package, and that is a constraint rather than a coincidence.
+// Terminal detection is os.Stat plus os.ModeCharDevice, not golang.org/x/term,
+// so a tool importing this package builds no other module. The one subpackage,
+// cobrahelp, is the cobra frontend, kept apart so cobra reaches only a tool
+// that imports it. The module's go.mod names cobra for it, so an importer's
+// module graph lists cobra while its build compiles none of it.
+//
+// The go line in this module's go.mod does become the importer's floor, and go
+// get raises a lower one to match. This prints it:
 //
 //	go list -m -f '{{.GoVersion}}' github.com/datapointchris/gotermstyle@latest
 //
