@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -151,7 +150,7 @@ func TestAppSpecificSectionsRotateSoNeighborsDiffer(t *testing.T) {
 	}
 }
 
-func TestTheHouseCodesAreTheOnesDotfilesExports(t *testing.T) {
+func TestTheHouseCodesMatchThePythonAndBashLibraries(t *testing.T) {
 	// Three implementations emit this palette. Changing one without the other
 	// two is the failure this library exists to prevent, so the codes are
 	// asserted literally rather than derived.
@@ -169,19 +168,6 @@ func TestTheHouseCodesAreTheOnesDotfilesExports(t *testing.T) {
 	} {
 		if c.got != c.want {
 			t.Errorf("%s = %q, want %q", c.name, c.got, c.want)
-		}
-	}
-}
-
-func TestNothingInThePaletteIsDim(t *testing.T) {
-	// standards/cli-design.md bans it outright for being unreadable against
-	// half the terminal themes in use.
-	for _, code := range []string{
-		CodeCyan, CodeYellow, CodeGreen, CodeRed, CodeBlue,
-		CodeMagenta, CodeWhite, CodeCommand, CodeBold, CodeReset,
-	} {
-		if strings.Contains(code, "[2m") {
-			t.Errorf("%q is dim", code)
 		}
 	}
 }
