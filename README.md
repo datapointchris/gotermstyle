@@ -94,12 +94,12 @@ against `cmd.OutOrStdout()`:
 root.SetHelpFunc(func(cmd *cobra.Command, _ []string) {
     s := gotermstyle.New(cmd.OutOrStdout())
 
-    s.HelpHeader("menu labs", "Small experiments worth revisiting.")
-    s.HelpUsage("menu labs <verb>")
+    s.HelpHeader("lab", "Small experiments worth revisiting.")
+    s.HelpUsage("lab <verb>")
 
     s.HelpSection("Commands")
-    s.HelpRow("menu labs list", "", "List every lab")
-    s.HelpRow("menu labs show", "<id>", "Show one lab")
+    s.HelpRow("lab list", "", "List every lab")
+    s.HelpRow("lab show", "<id>", "Show one lab")
     s.HelpRow("", "", "An id comes from list") // continues the row above
 
     s.HelpEnd()
