@@ -2,7 +2,8 @@
 //
 // It is the Go counterpart to two things that already exist: pytermstyle
 // (https://github.com/datapointchris/pytermstyle) for the Python tools, and
-// ~/.local/shell/formatting.sh for the bash ones. The parallel is the point —
+// formatting.sh for the bash ones. The README says where each lives. The
+// parallel is the point —
 // a Go screen, a Python screen and a bash screen sitting next to each other on
 // PATH should be indistinguishable, which is a property no third-party styling
 // library can provide, because each brings its own aesthetic.
@@ -15,28 +16,31 @@
 //
 // The membership test: it belongs here only if two tools would otherwise write
 // it identically *and* writing it differently would be visible on screen.
-// Everything else stays in the tool. menucore was named for one family and
-// ended up holding the house style for all of them; the split that fixed it is
-// the reason this package is named for the language rather than for a caller.
+// Everything else stays in the tool. The package is named for the language
+// rather than for a caller, because a style package named for one family of
+// tools ends up holding the house style for all of them.
 //
 // # Dependencies
 //
-// None, and that is a constraint rather than a coincidence — the same one
-// goselfupdate holds. Terminal detection is os.Stat plus os.ModeCharDevice, not
-// golang.org/x/term, so a tool importing this downloads nothing and its own Go
-// floor is unaffected.
+// None, and that is a constraint rather than a coincidence. Terminal detection
+// is os.Stat plus os.ModeCharDevice, not golang.org/x/term, so a tool importing
+// this downloads no other module. The go line in this module's go.mod does
+// become the importer's floor, and go get raises a lower one to match. This
+// prints it:
+//
+//	go list -m -f '{{.GoVersion}}' github.com/datapointchris/gotermstyle@latest
 //
 // # Using it
 //
 // Resolve a Screen against the writer the output is going to, then render:
 //
 //	s := gotermstyle.New(cmd.OutOrStdout())
-//	s.HelpHeader("menu labs", "Small experiments worth revisiting.")
-//	s.HelpUsage("menu labs <verb>")
+//	s.HelpHeader("lab", "Small experiments worth revisiting.")
+//	s.HelpUsage("lab <verb>")
 //
 //	s.HelpSection("Commands")
-//	s.HelpRow("menu labs list", "", "List every lab")
-//	s.HelpRow("menu labs show", "<id>", "Show one lab")
+//	s.HelpRow("lab list", "", "List every lab")
+//	s.HelpRow("lab show", "<id>", "Show one lab")
 //
 //	s.HelpEnd()
 //

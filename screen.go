@@ -74,7 +74,7 @@ func (s *Screen) HelpHeader(name, tagline string) {
 }
 
 // HelpUsage prints the invocation lines. The "Usage: " label belongs to this
-// library rather than to the caller, so every screen on the fleet labels it
+// library rather than to the caller, so every screen it draws labels it
 // identically. Extra lines align under the first.
 func (s *Screen) HelpUsage(lines ...string) {
 	s.print("")

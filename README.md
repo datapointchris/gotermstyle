@@ -151,7 +151,7 @@ for a caller building a string by interpolation. `On` reports whether the
 palette emits color.
 
 There is no dim. Its contrast is whatever the terminal theme makes it, and on
-some themes it is unreadable.
+many themes it is unreadable.
 
 ## `Clip` and alignment — widths are counted in runes, on the uncolored text
 

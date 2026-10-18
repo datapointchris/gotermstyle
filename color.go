@@ -7,17 +7,16 @@ import (
 )
 
 // The house palette, as the escape sequences themselves. These are the codes
-// `~/dotfiles/configs/common/.local/shell/colors.sh` exports and pytermstyle
-// interpolates, so a Go screen, a Python screen and a bash screen sitting next
-// to each other on PATH are the same product.
+// the bash library's colors.sh exports and pytermstyle interpolates, so a Go
+// screen, a Python screen and a bash screen sitting next to each other on PATH
+// are the same product.
 //
 // They are terminal-palette codes rather than absolute RGB, which is why no
 // color-profile degradation is needed: a 16-color terminal renders them
 // correctly, and TERM=dumb is handled by the gate instead.
 //
-// There is deliberately no dim. See standards/cli-design.md § "Never use
-// `[dim]`", which rules it out for being unreadable against half the terminal
-// themes in use.
+// There is deliberately no dim. Its contrast is whatever the terminal theme
+// makes it, and on many themes it is unreadable.
 const (
 	CodeCyan    = "\033[0;96m"
 	CodeYellow  = "\033[0;93m"
@@ -102,7 +101,7 @@ func PaletteFor(w io.Writer) Palette {
 //
 // The terminal check is os.Stat plus os.ModeCharDevice rather than
 // golang.org/x/term, which would cost this package the zero-dependency
-// guarantee it is built around. It is the idiom goselfupdate/autoupdate uses.
+// guarantee it is built around.
 func Enabled(w io.Writer) bool {
 	if os.Getenv("NO_COLOR") != "" {
 		return false
