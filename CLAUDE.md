@@ -23,7 +23,7 @@ not as a blank slate.
   the other two" says where. Terminal detection is `os.Stat` plus
   `os.ModeCharDevice` rather than `golang.org/x/term`, and `Columns` reaches
   `TIOCGWINSZ` through stdlib `syscall`, so the root package builds no other
-  module. Nothing outside `cobrahelp/` imports cobra.
+  module.
 
   What it gives up is wide-rune and grapheme-cluster width, which `lipgloss`
   handles and this does not. That is a deliberate acceptance, not an oversight.
@@ -64,14 +64,12 @@ changes in all three or in none.
 - **No goreleaser.** A library has no binary to build, so go-semantic-release
   alone cuts the release.
 
-`release.yml` cuts the tags. A tag is exactly what a consumer resolves, so
-something has to cut it.
-
-The tag is cut from `main` by `go-semantic-release`, after a build, vet and
-`-race` test on ubuntu, macOS and windows. Windows is in that matrix because it
-is the one platform this package cannot be exercised on locally: `Columns`
-reaches `TIOCGWINSZ` through stdlib `syscall`, which windows does not have, so
-the fallback sits behind a build constraint that nothing else proves.
+`release.yml` cuts the tag from `main` with `go-semantic-release`, after a
+build, vet and `-race` test on ubuntu, macOS and windows. Windows is in that
+matrix because it is the one platform this package cannot be exercised on
+locally: `Columns` reaches `TIOCGWINSZ` through stdlib `syscall`, which windows
+does not have, so the fallback sits behind a build constraint that nothing else
+proves.
 
 `allow-initial-development-versions` holds the line at 0.x. Without it,
 go-semantic-release majors on every change while the major is 0. For a library

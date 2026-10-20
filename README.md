@@ -7,8 +7,9 @@ looks the same as its Python and bash neighbors on `PATH`. Those neighbors are
 styled by pytermstyle and `formatting.sh`. The section on the other two says
 where each lives.
 
-It renders and does nothing else. The caller keeps its command framework, its
-execution and its help function, and calls this from inside them. Real layout
+It renders and does nothing else. The caller keeps its command framework and
+its execution. The root package is called from inside the caller's help
+function; `cobrahelp.Install` replaces that function instead. Real layout
 belongs to [lipgloss](https://github.com/charmbracelet/lipgloss), which has
 tables, lists, layers and wide-rune width. None of those are here.
 
@@ -16,7 +17,9 @@ Something belongs in this package only if two tools would otherwise write it
 identically and a difference would show on screen. Domain logic and
 configuration stay in the tool. So does anything one tool could own alone.
 
-The module requires nothing outside the standard library, by its own choice.
+The root package imports nothing outside the standard library, by its own
+choice. `cobrahelp`, the cobra frontend, is the one package that imports cobra
+and pflag, so a tool importing only the root compiles neither.
 
 ## Install
 
@@ -65,7 +68,7 @@ Then, from that directory:
 
 ```bash
 go mod init example.com/hello    # a module to import it into
-go mod tidy                      # resolves the import; go.sum gains its lines and no others
+go mod tidy                      # resolves the import and records its checksums in go.sum
 go run .                         # cyan rules and names, because stdout is a terminal
 go run . | cat                   # the same screen uncolored, because a pipe is not a terminal
 NO_COLOR=1 go run .              # uncolored, because the user's preference outranks everything
@@ -226,8 +229,8 @@ Good libraries exist. lipgloss is the Go peer of Rich. Its tables, lists,
 layers and ANSI-aware width do more than this package does.
 
 The value bought here is narrower. It is a Go screen that looks the same as its
-Python and bash neighbors on `PATH`, with no dependency. Three alternatives
-were weighed against that:
+Python and bash neighbors on `PATH`, from a root package that imports only the
+standard library. Three alternatives were weighed against that:
 
 - **`charmbracelet/fang`** owns command execution. `fang.Execute` wraps the
   root command's `ExecuteContext`, which a tool with a self-update wrapper
