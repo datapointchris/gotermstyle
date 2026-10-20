@@ -36,8 +36,8 @@ import (
 //
 // Every list prints in the order the tree adds it, which is the order a
 // command is reached for, so Install turns off cobra's alphabetical sorting.
-// That setting is cobra's and process-wide, which is why one call in the file
-// building the root is the whole installation.
+// That setting is cobra's and process-wide: every command tree in the process
+// loses alphabetical sorting, not only root's.
 func Install(root *cobra.Command) {
 	cobra.EnableCommandSorting = false
 	root.SetHelpFunc(func(cmd *cobra.Command, _ []string) { write(cmd.OutOrStdout(), cmd) })
@@ -47,7 +47,6 @@ func Install(root *cobra.Command) {
 	})
 }
 
-// write writes cmd's screen to out.
 func write(out io.Writer, cmd *cobra.Command) {
 	var b strings.Builder
 	fmt.Fprintf(&b, "%s — %s\n", cmd.CommandPath(), cmd.Short)
@@ -109,7 +108,8 @@ type section struct {
 
 // commandSections is every command beneath cmd, under cmd's own groups where
 // it has them. A namespace's commands sit under the group the namespace is in.
-// Every title ends in "commands", as cobra's own heading does.
+// A group's title is its own, less a trailing colon; the two this supplies,
+// "Commands" and "Other commands", follow cobra's own heading.
 func commandSections(cmd *cobra.Command) []section {
 	children := typeable(cmd)
 	if len(children) == 0 {
@@ -155,8 +155,9 @@ func typeable(cmd *cobra.Command) []*cobra.Command {
 	return children
 }
 
-// leafRows is every runnable command at or beneath cmds, each spelled from the
-// word after screen's command down to the leaf, arguments included.
+// leafRows is every leaf at or beneath cmds, each spelled from the word after
+// screen's command down to the leaf, arguments included. A command with
+// children gets no row of its own, even when it runs.
 func leafRows(screen *cobra.Command, cmds []*cobra.Command) []row {
 	var rows []row
 	for _, cmd := range cmds {

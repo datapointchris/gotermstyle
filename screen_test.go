@@ -83,9 +83,8 @@ func TestRowsStillAlignWhenColorIsOff(t *testing.T) {
 }
 
 func TestAMultiByteNameDoesNotShiftTheDescription(t *testing.T) {
-	// Widths count runes, the unit pytermstyle's len counts on a str. An
-	// em-dash is three bytes and one column, so a byte-measured width slides
-	// the row two places left.
+	// An em-dash is three bytes and one column, so a byte-measured width slides
+	// this row two places left.
 	lines := render(t, func(s *Screen) {
 		s.HelpSection("Commands")
 		s.HelpRow("a—b", "", "first")
@@ -117,8 +116,8 @@ func TestArgsShareTheNameColumn(t *testing.T) {
 }
 
 func TestAContinuationRowWithArgsAlignsItsDescription(t *testing.T) {
-	// The row writes a space between its empty name and its args, so the
-	// column it pads holds that space too.
+	// A continuation row writes a space before `<more>`. Measured without it,
+	// "second" starts one column right of "first".
 	lines := render(t, func(s *Screen) {
 		s.HelpSection("Commands")
 		s.HelpRow("named", "<arg>", "first")
