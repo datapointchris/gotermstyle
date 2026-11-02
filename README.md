@@ -199,14 +199,16 @@ import "github.com/datapointchris/gotermstyle/cobrahelp"
 cobrahelp.Install(root)
 ```
 
-Every screen then says what the command is, and lists every command a caller
-can run beneath it. Each row is spelled from the screen's own command down to
-the leaf, arguments included, so a command three levels down is on the root
-rather than three screens away. The examples and flags follow. A section is a
-group the command declares with `AddGroup`, and commands keep the order the
-tree adds them, so `Install` turns off cobra's alphabetical sorting. A command
-no group claims sits under "Other commands". Descriptions wrap at 80 columns,
-and a command line wider than 40 sits alone with its description beneath.
+Every screen then says what the command is, and lists every leaf command
+beneath it. A command with children gets no row of its own, even one that runs.
+Each row is spelled from the screen's own command down to the leaf, arguments
+included, so a command three levels down is on the root rather than three
+screens away. The examples and flags follow. A section is a group the command
+declares with `AddGroup`, and commands keep the order the tree adds them, so
+`Install` turns off cobra's alphabetical sorting for every command tree in the
+process. A command no group claims sits under "Other commands". Descriptions
+wrap at 80 columns, and a command line wider than 40 sits alone with its
+description beneath.
 
 It replaces cobra's help and usage templates outright rather than patching
 their rows. Cobra's template gives a namespace a `Usage: <cmd> [command]`

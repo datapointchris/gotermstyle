@@ -1,14 +1,14 @@
-// Package cobrahelp renders every help screen of a cobra command tree in the
-// help grammar: what the command is, then every command a caller can run
-// beneath it, spelled from the screen's own command down to the leaf with its
-// arguments, then its examples and flags.
+// Package cobrahelp renders every help screen of a cobra command tree: what
+// the command is, then every leaf beneath it, spelled from the screen's own
+// command down to the leaf with its arguments, then its examples and flags. A
+// command with children gets no row, even one that runs.
 //
 // Cobra's own screen names only the next word down, so a command three levels
 // down is three screens away, each ending in `[command]`. Listing the leaves
-// of the whole subtree puts every command on the root and each namespace's
-// share of them on that namespace. A row starts at the word after the screen's
-// own command, as cobra's rows do, so a reader of help screens that matches a
-// row's first word against the command's children still finds them.
+// of the whole subtree puts every leaf on the root and each namespace's share
+// of them on that namespace. A row starts at the word after the screen's own
+// command, as cobra's rows do, so a row's first word is always one of that
+// command's children.
 //
 // The renderer replaces cobra's help and usage templates rather than swapping
 // their command rows. Cobra's template gives a namespace a
@@ -100,7 +100,6 @@ func write(out io.Writer, cmd *cobra.Command) {
 // row is one command a caller can run, and what it does.
 type row struct{ line, short string }
 
-// section is a titled run of rows.
 type section struct {
 	title string
 	rows  []row

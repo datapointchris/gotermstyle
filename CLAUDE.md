@@ -17,13 +17,12 @@ not as a blank slate.
   cobra and pflag, and the only requirements in `go.mod` are its. A tool
   importing the root package compiles neither.
 
-  The root's choice stands on its own. This package exists so a Go screen
-  looks the same as its Python and bash neighbors, and everything it needs
-  to do that is a string. The bytes differ, and the README's "Relationship to
-  the other two" says where. Terminal detection is `os.Stat` plus
-  `os.ModeCharDevice` rather than `golang.org/x/term`, and `Columns` reaches
-  `TIOCGWINSZ` through stdlib `syscall`, so the root package builds no other
-  module.
+  The root package exists so a Go screen looks the same as its Python and bash
+  neighbors, and everything it needs to do that is a string. The bytes differ,
+  and the README's "Relationship to the other two" says where. Terminal
+  detection is `os.Stat` plus `os.ModeCharDevice` rather than
+  `golang.org/x/term`, and `Columns` reaches `TIOCGWINSZ` through stdlib
+  `syscall`, so the root package builds no other module.
 
   What it gives up is wide-rune and grapheme-cluster width, which `lipgloss`
   handles and this does not. That is a deliberate acceptance, not an oversight.
@@ -56,8 +55,9 @@ not as a blank slate.
 
 gofumpt formats and golangci-lint v2 lints, both as commit hooks and in CI;
 `.pre-commit-config.yaml` and `.golangci.yml` configure them. The help grammar
-this library renders is the one its Python and bash siblings render, and it
-changes in all three or in none.
+`Screen` renders is the one its Python and bash siblings render, and it changes
+in all three or in none. `cobrahelp` draws an uncolored screen of its own, with
+no header bar or section rule, and is not bound by this.
 
 ## Releases
 
@@ -65,11 +65,9 @@ changes in all three or in none.
   alone cuts the release.
 
 `release.yml` cuts the tag from `main` with `go-semantic-release`, after a
-build, vet and `-race` test on ubuntu, macOS and windows. Windows is in that
-matrix because it is the one platform this package cannot be exercised on
-locally: `Columns` reaches `TIOCGWINSZ` through stdlib `syscall`, which windows
-does not have, so the fallback sits behind a build constraint that nothing else
-proves.
+build, vet and `-race` test on ubuntu, macOS and windows. The windows leg is the
+only run that compiles `columns_other.go`, the fallback for every platform whose
+`syscall` has no `TIOCGWINSZ`.
 
 `allow-initial-development-versions` holds the line at 0.x. Without it,
 go-semantic-release majors on every change while the major is 0. For a library
