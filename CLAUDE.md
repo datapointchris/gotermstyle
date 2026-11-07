@@ -66,8 +66,8 @@ no header bar or section rule, and is not bound by this.
 
 `release.yml` cuts the tag from `main` with `go-semantic-release`, after a
 build, vet and `-race` test on ubuntu, macOS and windows. The windows leg is the
-only run that compiles `columns_other.go`, the fallback for every platform whose
-`syscall` has no `TIOCGWINSZ`.
+only run that compiles `columns_other.go`, the fallback for every platform
+outside the build constraint in `columns_unix.go`.
 
 `allow-initial-development-versions` holds the line at 0.x. Without it,
 go-semantic-release majors on every change while the major is 0. For a library
