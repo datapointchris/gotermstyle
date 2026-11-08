@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/datapointchris/gotermstyle/main/tuitheme/schema/v1.json",
+  "ui": {
+    "text": {},
+    "muted": "8",
+    "accent": "11",
+    "selection": { "fg": "0", "bg": "7" },
+    "match": "11",
+    "border": "8",
+    "panel": {},
+    "error": "9",
+    "warning": "11",
+    "info": "12",
+    "success": "10"
+  },
+  "markdown": {
+    "strong": { "bold": true },
+    "italic": { "italic": true },
+    "strikethrough": { "strikethrough": true },
+    "underline": { "underline": true },
+    "heading": { "bold": true },
+    "heading.1": { "fg": "12", "bold": true },
+    "heading.2": { "fg": "12", "bold": true },
+    "heading.3": { "fg": "14", "bold": true },
+    "quote": {},
+    "math": "11",
+    "link": { "fg": "12", "underline": true },
+    "link.label": { "fg": "12", "underline": true },
+    "link.url": "8",
+    "raw": "11",
+    "raw.block": {},
+    "list": {},
+    "list.checked": "10",
+    "list.unchecked": "10"
+  },
+  "syntax": {
+    "comment": { "fg": "8", "italic": true },
+    "string": "10",
+    "number": "11",
+    "constant": "11",
+    "parameter": {},
+    "function": "12",
+    "function.builtin": "14",
+    "keyword": "13",
+    "type": "14",
+    "operator": {},
+    "punctuation": {},
+    "attribute": "14",
+    "variable": {},
+    "tag": "12"
+  }
+}

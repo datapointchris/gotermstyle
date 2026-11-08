@@ -15,7 +15,8 @@ not as a blank slate.
   lives in its own package so a consumer importing only the core inherits
   nothing. `cobrahelp/` is that frontend. It is the one package that imports
   cobra and pflag, and the only requirements in `go.mod` are its. A tool
-  importing the root package compiles neither.
+  importing the root package compiles neither. `tuitheme/` imports the standard
+  library alone as well.
 
   The root package exists so a Go screen looks the same as its Python and bash
   neighbors, and everything it needs to do that is a string. The bytes differ,
@@ -41,8 +42,22 @@ not as a blank slate.
   "Relationship to the other two" says where each lives. Changing one without
   the other two is the failure this library exists to prevent — the point is
   that three screens on one `PATH` look like one product.
-- **No dim, ever.** It is unreadable on many terminal themes. Use normal text,
-  bold, or a color.
+- **No dim, ever, in anything this module chooses.** It is unreadable on many
+  terminal themes. Use normal text, bold, or a color. The one dim it draws is
+  one a user's theme file asks for, because that file's author sees the colors
+  it dims. `tuitheme/default.json` never sets it.
+- **The theme file format only grows.** Programs released long ago read files
+  written today, so a reader ignores a group, key or style field it does not
+  know, and a key added later is optional. An older reader fails the whole load
+  on a value it cannot read, so a new value form goes in a new key or style
+  field, never in place of an old one. A change that cannot be added that way
+  is a new file beside `current.json`, with a schema beside
+  `tuitheme/schema/v1.json`, and a generator writes both. A key added to the
+  schema gets its value in `tuitheme/default.json` in the same change, unless it
+  falls back along its dots to one there, and `tuitheme/schema_test.go` fails
+  until it does. datapointchris/theme's generator types the `ui` and `markdown`
+  keys out again, and its suite compares them with the published schema, so a
+  new key lands there too.
 - **Color resolves once, and only where it will be rendered.** `NO_COLOR`
   outranks `FORCE_COLOR`: the first is the user's preference, the second only
   overrides the terminal detection.

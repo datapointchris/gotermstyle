@@ -11,8 +11,9 @@
 // # Scope
 //
 // The palette, the section header, the help grammar, and the rules about when
-// any of it is emitted at all. Not domain logic, not configuration, not
-// anything a single tool could own instead.
+// any of it is emitted at all. Beside them, tuitheme reads the colors every
+// terminal UI on this module shares. Not domain logic, not a tool's own
+// configuration, not anything a single tool could own instead.
 //
 // The membership test: it belongs here only if two tools would otherwise write
 // it identically *and* writing it differently would be visible on screen.
@@ -24,10 +25,12 @@
 //
 // None in this package, and that is a constraint rather than a coincidence.
 // Terminal detection is os.Stat plus os.ModeCharDevice, not golang.org/x/term,
-// so a tool importing this package builds no other module. The one subpackage,
-// cobrahelp, is the cobra frontend, kept apart so cobra reaches only a tool
-// that imports it. The module's go.mod names cobra for it, so an importer's
-// module graph lists cobra while its build compiles none of it.
+// so a tool importing this package builds no other module. The subpackage
+// cobrahelp is the cobra frontend, kept apart so cobra reaches only a tool
+// that imports it. The module's go.mod names cobra for cobrahelp, so an
+// importer's module graph lists cobra while its build compiles none of it.
+// The subpackage tuitheme reads the theme file a terminal UI draws from, and
+// imports only the standard library.
 //
 // The go line in this module's go.mod does become the importer's floor, and go
 // get raises a lower one to match. This prints it:

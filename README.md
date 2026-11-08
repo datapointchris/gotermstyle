@@ -2,7 +2,8 @@
 
 A Go library that styles a command-line tool's output. It holds a fixed
 palette, a boxed section header, a help-screen grammar, and the rule for when
-any of it reaches the terminal. Its purpose is a Go tool whose help screen
+any of it reaches the terminal. Its `tuitheme` package reads the theme file a
+terminal UI draws its colors from. Its purpose is a Go tool whose help screen
 looks the same as its Python and bash neighbors on `PATH`. Those neighbors are
 styled by pytermstyle and `formatting.sh`. The section on the other two says
 where each lives.
@@ -214,6 +215,82 @@ It replaces cobra's help and usage templates outright rather than patching
 their rows. Cobra's template gives a namespace a `Usage: <cmd> [command]`
 block, which a first-time reader takes for the answer, and puts the examples
 above the commands.
+
+## `tuitheme` — every terminal UI reads its colors from one theme file
+
+```go
+import "github.com/datapointchris/gotermstyle/tuitheme"
+
+path, err := tuitheme.DefaultPath()
+if err != nil {
+    return err
+}
+theme, err := tuitheme.Load(path) // a missing file is the built-in default, with no error
+if err != nil {
+    log.Print(err) // theme is the built-in default, so the screen still draws
+}
+fmt.Println(pal.Paint(theme.Code("ui.selection"), row)) // pal is a gotermstyle.Palette
+
+reloads := make(chan os.Signal, 1)
+tuitheme.Notify(reloads) // SIGUSR2 asks for the file again
+for range reloads {
+    if next, err := tuitheme.Load(path); err == nil {
+        theme = next // on an error, keep drawing the theme on screen
+    }
+}
+```
+
+The 16 terminal colors hold no shade near the background, so a selected row
+drawn in them is a reversed slab. A theme file gives a program the theme's
+own selection, panel and accent colors. A theme generator writes one file per
+theme, and every program on this package reads the same one.
+
+The file is JSON in three groups. `ui` holds the interface's roles,
+`markdown` holds Neovim's `@markup` captures, and `syntax` holds tree-sitter
+captures. A value is `"#rrggbb"`, a palette slot from `"0"` to `"15"`, or a
+style object of `fg`, `bg`, `bold`, `italic`, `underline`, `strikethrough` and
+`dim`:
+
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/datapointchris/gotermstyle/main/tuitheme/schema/v1.json",
+  "ui": { "accent": "#4eb6fe", "selection": { "fg": "#c5c8c6", "bg": "#373b41" } },
+  "markdown": { "heading": { "fg": "#4eb6fe", "bold": true } },
+  "syntax": { "keyword": "#b294bb", "keyword.return": { "fg": "#b294bb", "bold": true } }
+}
+```
+
+[`tuitheme/schema/v1.json`](tuitheme/schema/v1.json) describes every key. An
+editor validates and completes a file against it through `$schema`.
+
+- **Every key is optional.** A missing key falls back along its dots, so
+  `markdown.heading.2` takes `markdown.heading`. Then it takes the built-in
+  default, [`tuitheme/default.json`](tuitheme/default.json).
+- **The built-in default is written in palette slots.** A program with no theme
+  file draws in the terminal's own 16 colors.
+- **A group, key or style field the reader does not know is ignored**, so a
+  newer file never breaks an older program. A value of neither form fails the
+  load, and the error names its key. `null` and `""` are neither form.
+- **The format only grows.** A new value form arrives as a new key or style
+  field, never in place of an old one. A change no older program could read is
+  a new file beside `current.json`, with a schema of its own. A generator writes
+  both, so a program built for v1 keeps its colors.
+- **`DefaultPath` is `$TUI_THEME_FILE` when set**, else
+  `$XDG_CONFIG_HOME/tui-theme/current.json`, else
+  `~/.config/tui-theme/current.json`. `TUI_THEME_FILE` points every program at
+  another file at once, such as a theme under test.
+- **`Load` always returns a theme to draw.** On an error it is the built-in
+  default, so a program starting up draws the terminal's 16 colors and reports
+  the error. A program reloading keeps the theme it has.
+- **`Code` is one SGR sequence opening with a reset**, as the house palette's
+  codes do. An exact color is 24-bit, which most terminals and tmux with its
+  `RGB` feature render.
+- **`dim` is drawn when a file asks for it.** The built-in default never does.
+
+`Notify` relays SIGUSR2 on unix and nothing elsewhere. The program loads the
+file again when it arrives, which re-resolves a `current.json` symlink. A Go
+program that never called `Notify` catches SIGUSR2 and ignores it. So a
+generator can signal every process of a reader's name, CLI runs included.
 
 ## Why this exists — cobra renders help with no notion of style
 
