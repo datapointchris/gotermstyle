@@ -3,6 +3,7 @@ package tuitheme
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -43,6 +44,26 @@ func TestRoleFallsBackAlongItsDotsThenToTheTerminalsSixteenColors(t *testing.T) 
 	} {
 		if got := test.theme.Code(test.role); got != test.want {
 			t.Errorf("%s = %q, want %q", test.role, got, test.want)
+		}
+	}
+}
+
+// A generator with no color for a role writes null or "" for it. The load fails
+// naming the key, and the theme it returns still draws the default selection.
+func TestAGeneratorsNullOrEmptyColorFailsTheLoadAndLeavesTheDefaultToDraw(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "current.json")
+	for _, test := range []struct{ file, key string }{
+		{`{"ui": {"selection": null}}`, "ui.selection"},
+		{`{"ui": {"accent": ""}}`, "ui.accent"},
+		{`{"ui": {"selection": {"fg": "", "bg": "#373b41"}}}`, "ui.selection: fg"},
+	} {
+		writeTheme(t, path, test.file)
+		theme, err := Load(path)
+		if err == nil || !strings.Contains(err.Error(), test.key) {
+			t.Errorf("%s: err = %v, want one naming %s", test.file, err, test.key)
+		}
+		if got, want := theme.Code("ui.selection"), "\033[0;30;47m"; got != want {
+			t.Errorf("%s: ui.selection = %q, want the default %q", test.file, got, want)
 		}
 	}
 }

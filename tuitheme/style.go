@@ -22,11 +22,8 @@ type Color struct {
 	r, g, b uint8
 }
 
-// parseColor reads the file's two color forms, and the empty string as unset.
+// parseColor reads the file's two color forms.
 func parseColor(s string) (Color, error) {
-	if s == "" {
-		return Color{}, nil
-	}
 	if strings.HasPrefix(s, "#") {
 		v, err := strconv.ParseUint(s[1:], 16, 32)
 		if len(s) != 7 || err != nil {

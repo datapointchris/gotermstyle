@@ -74,21 +74,24 @@ func DefaultPath() string {
 	return filepath.Join(dir, "tui-theme", "current.json")
 }
 
-// Load reads the theme file at path. A file that does not exist is the
-// built-in default, with no error, because a terminal with no theme file is the
-// ordinary case. A file that cannot be read or holds a value of neither form is
-// an error, and the caller keeps what it was drawing.
+// Load reads the theme file at path, and always returns a theme to draw. A file
+// that does not exist is the built-in default with no error, because a terminal
+// with no theme file is the ordinary case. On any other error the theme is the
+// built-in default too, and a program reloading keeps the theme it has.
 func Load(path string) (*Theme, error) {
+	if path == "" {
+		return Default(), errors.New("tuitheme: no theme file named")
+	}
 	data, err := os.ReadFile(path)
 	if errors.Is(err, fs.ErrNotExist) {
 		return Default(), nil
 	}
 	if err != nil {
-		return nil, fmt.Errorf("tuitheme: %w", err)
+		return Default(), fmt.Errorf("tuitheme: %w", err)
 	}
 	roles, err := parse(data)
 	if err != nil {
-		return nil, fmt.Errorf("tuitheme: %s: %w", path, err)
+		return Default(), fmt.Errorf("tuitheme: %s: %w", path, err)
 	}
 	return &Theme{roles: roles}, nil
 }
@@ -125,15 +128,16 @@ func lookup(roles map[string]Style, role string) (Style, bool) {
 	return Style{}, false
 }
 
-// styleObject is a value's object form. Fields it does not name are ignored.
+// styleObject is a value's object form. Fields it does not name are ignored,
+// and an fg or bg it leaves out is nil.
 type styleObject struct {
-	Fg            string `json:"fg"`
-	Bg            string `json:"bg"`
-	Bold          bool   `json:"bold"`
-	Italic        bool   `json:"italic"`
-	Underline     bool   `json:"underline"`
-	Strikethrough bool   `json:"strikethrough"`
-	Dim           bool   `json:"dim"`
+	Fg            *string `json:"fg"`
+	Bg            *string `json:"bg"`
+	Bold          bool    `json:"bold"`
+	Italic        bool    `json:"italic"`
+	Underline     bool    `json:"underline"`
+	Strikethrough bool    `json:"strikethrough"`
+	Dim           bool    `json:"dim"`
 }
 
 func parse(data []byte) (map[string]Style, error) {
@@ -162,7 +166,12 @@ func parse(data []byte) (map[string]Style, error) {
 	return roles, nil
 }
 
+// parseValue names a null as the file writes it, rather than as the "" it
+// decodes to.
 func parseValue(raw json.RawMessage) (Style, error) {
+	if string(raw) == "null" {
+		return Style{}, errors.New("null is neither a color nor a style object")
+	}
 	var color string
 	if json.Unmarshal(raw, &color) == nil {
 		fg, err := parseColor(color)
@@ -172,11 +181,11 @@ func parseValue(raw json.RawMessage) (Style, error) {
 	if err := json.Unmarshal(raw, &obj); err != nil {
 		return Style{}, fmt.Errorf("%s is neither a color nor a style object", raw)
 	}
-	fg, err := parseColor(obj.Fg)
+	fg, err := optionalColor(obj.Fg)
 	if err != nil {
 		return Style{}, fmt.Errorf("fg: %w", err)
 	}
-	bg, err := parseColor(obj.Bg)
+	bg, err := optionalColor(obj.Bg)
 	if err != nil {
 		return Style{}, fmt.Errorf("bg: %w", err)
 	}
@@ -185,6 +194,14 @@ func parseValue(raw json.RawMessage) (Style, error) {
 		Bold: obj.Bold, Italic: obj.Italic, Underline: obj.Underline,
 		Strikethrough: obj.Strikethrough, Dim: obj.Dim,
 	}, nil
+}
+
+// optionalColor reads an fg or bg, which is unset when the object leaves it out.
+func optionalColor(s *string) (Color, error) {
+	if s == nil {
+		return Color{}, nil
+	}
+	return parseColor(*s)
 }
 
 func mustParse(data []byte) map[string]Style {
