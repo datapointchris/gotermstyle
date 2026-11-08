@@ -15,7 +15,8 @@ not as a blank slate.
   lives in its own package so a consumer importing only the core inherits
   nothing. `cobrahelp/` is that frontend. It is the one package that imports
   cobra and pflag, and the only requirements in `go.mod` are its. A tool
-  importing the root package compiles neither.
+  importing the root package compiles neither. `tuitheme/` imports the standard
+  library alone as well.
 
   The root package exists so a Go screen looks the same as its Python and bash
   neighbors, and everything it needs to do that is a string. The bytes differ,
@@ -41,8 +42,17 @@ not as a blank slate.
   "Relationship to the other two" says where each lives. Changing one without
   the other two is the failure this library exists to prevent — the point is
   that three screens on one `PATH` look like one product.
-- **No dim, ever.** It is unreadable on many terminal themes. Use normal text,
-  bold, or a color.
+- **No dim, ever, in anything this module chooses.** It is unreadable on many
+  terminal themes. Use normal text, bold, or a color. The one dim it draws is
+  one a user's theme file asks for, because that file's author sees the colors
+  it dims. `tuitheme/default.json` never sets it.
+- **The theme file format only grows.** Programs released long ago read files
+  written today, so a reader ignores a group or key it does not know, and a key
+  added later is optional. A change an older reader cannot read, such as a new
+  value form, is a new schema file and URL beside `tuitheme/schema/v1.json`,
+  never an edit to it. A key added to the schema gets its value in
+  `tuitheme/default.json` in the same change, unless it falls back along its
+  dots to one there.
 - **Color resolves once, and only where it will be rendered.** `NO_COLOR`
   outranks `FORCE_COLOR`: the first is the user's preference, the second only
   overrides the terminal detection.

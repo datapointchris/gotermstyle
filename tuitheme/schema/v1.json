@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/datapointchris/gotermstyle/main/tuitheme/schema/v1.json",
+  "title": "TUI theme",
+  "description": "The colors and styles a terminal program draws its interface, markdown and code in, keyed by role and tree-sitter capture rather than by any one program's widgets. Every group and key is optional. A missing key falls back along its dots (heading.2 to heading), then to the reader's built-in default, which is written in the terminal's own 16 colors. A reader ignores a group or key it does not know. A change an older reader cannot read gets a new schema URL rather than a version field.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "description": "This schema's URL, so an editor validates and completes the file with no setup.",
+      "type": "string"
+    },
+    "ui": {
+      "description": "The interface's roles: text, selection, borders and the colors that carry a state.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Ordinary text. An empty style object is the terminal's own foreground.",
+          "$ref": "#/definitions/value"
+        },
+        "muted": {
+          "description": "Text that recedes: a hint, a timestamp, a label beside its value.",
+          "$ref": "#/definitions/value"
+        },
+        "accent": {
+          "description": "What marks the current place, such as the current tab, in the theme's UI accent.",
+          "$ref": "#/definitions/value"
+        },
+        "selection": {
+          "description": "The row or item the cursor is on. Give it a bg, so the whole row reads as selected.",
+          "$ref": "#/definitions/value"
+        },
+        "match": {
+          "description": "Text a search or filter matched.",
+          "$ref": "#/definitions/value"
+        },
+        "border": {
+          "description": "Rules, box edges and the separators between panes.",
+          "$ref": "#/definitions/value"
+        },
+        "panel": {
+          "description": "A pane set apart from the main area. Its bg is the pane's background.",
+          "$ref": "#/definitions/value"
+        },
+        "error": {
+          "description": "Something failed.",
+          "$ref": "#/definitions/value"
+        },
+        "warning": {
+          "description": "Something needs attention but has not failed.",
+          "$ref": "#/definitions/value"
+        },
+        "info": {
+          "description": "A neutral notice.",
+          "$ref": "#/definitions/value"
+        },
+        "success": {
+          "description": "Something finished well.",
+          "$ref": "#/definitions/value"
+        }
+      },
+      "additionalProperties": false
+    },
+    "markdown": {
+      "description": "Markdown elements, named as Neovim's @markup captures without the prefix (:h treesitter-highlight-groups), so a note reads in a terminal program the way it reads in the editor.",
+      "type": "object",
+      "properties": {
+        "strong": { "description": "**Strong** text.", "$ref": "#/definitions/value" },
+        "italic": { "description": "*Emphasized* text.", "$ref": "#/definitions/value" },
+        "strikethrough": { "description": "~~Struck~~ text.", "$ref": "#/definitions/value" },
+        "underline": { "description": "Underlined text.", "$ref": "#/definitions/value" },
+        "heading": { "description": "Every heading level a heading.N key leaves out.", "$ref": "#/definitions/value" },
+        "heading.1": { "description": "A level 1 heading.", "$ref": "#/definitions/value" },
+        "heading.2": { "description": "A level 2 heading.", "$ref": "#/definitions/value" },
+        "heading.3": { "description": "A level 3 heading.", "$ref": "#/definitions/value" },
+        "heading.4": { "description": "A level 4 heading.", "$ref": "#/definitions/value" },
+        "heading.5": { "description": "A level 5 heading.", "$ref": "#/definitions/value" },
+        "heading.6": { "description": "A level 6 heading.", "$ref": "#/definitions/value" },
+        "quote": { "description": "A block quote's text.", "$ref": "#/definitions/value" },
+        "math": { "description": "Inline and block math.", "$ref": "#/definitions/value" },
+        "link": { "description": "A link, where link.label and link.url leave a part out.", "$ref": "#/definitions/value" },
+        "link.label": { "description": "A link's words.", "$ref": "#/definitions/value" },
+        "link.url": { "description": "A link's address.", "$ref": "#/definitions/value" },
+        "raw": { "description": "`Inline code`.", "$ref": "#/definitions/value" },
+        "raw.block": { "description": "A code block's text where no syntax highlighting applies.", "$ref": "#/definitions/value" },
+        "list": { "description": "A list's bullets and numbers.", "$ref": "#/definitions/value" },
+        "list.checked": { "description": "A checked task box.", "$ref": "#/definitions/value" },
+        "list.unchecked": { "description": "An unchecked task box.", "$ref": "#/definitions/value" }
+      },
+      "additionalProperties": false
+    },
+    "syntax": {
+      "description": "Code, keyed by tree-sitter capture without the @. Any dotted capture may be added, such as keyword.return or function.builtin, and one left out falls back along its dots to the base role.",
+      "type": "object",
+      "properties": {
+        "comment": { "description": "Comments.", "$ref": "#/definitions/value" },
+        "string": { "description": "String literals.", "$ref": "#/definitions/value" },
+        "number": { "description": "Numeric literals.", "$ref": "#/definitions/value" },
+        "constant": { "description": "Constants and built-in values such as true and nil.", "$ref": "#/definitions/value" },
+        "parameter": { "description": "A function's parameters.", "$ref": "#/definitions/value" },
+        "function": { "description": "Function names, at definition and at a call.", "$ref": "#/definitions/value" },
+        "keyword": { "description": "Keywords.", "$ref": "#/definitions/value" },
+        "type": { "description": "Type names.", "$ref": "#/definitions/value" },
+        "operator": { "description": "Operators.", "$ref": "#/definitions/value" },
+        "punctuation": { "description": "Brackets, delimiters and separators.", "$ref": "#/definitions/value" },
+        "attribute": { "description": "Attributes, annotations and decorators.", "$ref": "#/definitions/value" },
+        "variable": { "description": "Variable names.", "$ref": "#/definitions/value" },
+        "tag": { "description": "Markup tags, such as HTML elements.", "$ref": "#/definitions/value" }
+      },
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_-]*(\\.[a-z0-9_-]+)*$" },
+      "additionalProperties": { "$ref": "#/definitions/value" }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "color": {
+      "description": "#rrggbb for an exact color, or \"0\" to \"15\" for a slot of the terminal's own palette.",
+      "type": "string",
+      "pattern": "^(#[0-9a-fA-F]{6}|[0-9]|1[0-5])$"
+    },
+    "style": {
+      "description": "A color and its attributes. A color left out is the terminal's own.",
+      "type": "object",
+      "properties": {
+        "fg": { "description": "The text's color.", "$ref": "#/definitions/color" },
+        "bg": { "description": "The background's color.", "$ref": "#/definitions/color" },
+        "bold": { "description": "Bold text.", "type": "boolean" },
+        "italic": { "description": "Italic text.", "type": "boolean" },
+        "underline": { "description": "Underlined text.", "type": "boolean" },
+        "strikethrough": { "description": "Text struck through.", "type": "boolean" },
+        "dim": { "description": "Faint text. Its contrast is whatever the terminal makes it.", "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "value": {
+      "description": "A color, which is the text's color alone, or a style object.",
+      "oneOf": [{ "$ref": "#/definitions/color" }, { "$ref": "#/definitions/style" }]
+    }
+  }
+}
