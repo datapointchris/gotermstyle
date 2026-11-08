@@ -22,7 +22,7 @@
           "$ref": "#/definitions/value"
         },
         "accent": {
-          "description": "What marks the current place, such as the current tab, in the theme's UI accent.",
+          "description": "The theme's UI accent color.",
           "$ref": "#/definitions/value"
         },
         "selection": {
