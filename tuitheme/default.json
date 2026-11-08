@@ -5,7 +5,7 @@
     "muted": "8",
     "accent": "11",
     "selection": { "fg": "0", "bg": "7" },
-    "match": { "fg": "0", "bg": "11" },
+    "match": "11",
     "border": "8",
     "panel": {},
     "error": "9",

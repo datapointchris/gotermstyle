@@ -30,7 +30,7 @@
           "$ref": "#/definitions/value"
         },
         "match": {
-          "description": "Text a search or filter matched.",
+          "description": "Text a search or filter matched, usually as a foreground color, so it still reads on the selected row.",
           "$ref": "#/definitions/value"
         },
         "border": {
