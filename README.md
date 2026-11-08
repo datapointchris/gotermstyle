@@ -261,9 +261,7 @@ style object of `fg`, `bg`, `bold`, `italic`, `underline`, `strikethrough` and
 ```
 
 [`tuitheme/schema/v1.json`](tuitheme/schema/v1.json) describes every key. An
-editor validates and completes a file against it through `$schema`. A change an
-older reader could not read gets a new schema URL, so the file has no version
-field.
+editor validates and completes a file against it through `$schema`.
 
 - **Every key is optional.** A missing key falls back along its dots, so
   `markdown.heading.2` takes `markdown.heading`. Then it takes the built-in
@@ -273,6 +271,10 @@ field.
 - **A group, key or style field the reader does not know is ignored**, so a
   newer file never breaks an older program. A value of neither form fails the
   load, and the error names its key. `null` and `""` are neither form.
+- **The format only grows.** A new value form arrives as a new key or style
+  field, never in place of an old one. A change no older program could read is
+  a new file beside `current.json`, with a schema of its own. A generator writes
+  both, so a program built for v1 keeps its colors.
 - **`DefaultPath` is `$TUI_THEME_FILE` when set**, else
   `$XDG_CONFIG_HOME/tui-theme/current.json`, else
   `~/.config/tui-theme/current.json`. `TUI_THEME_FILE` points every program at

@@ -47,12 +47,17 @@ not as a blank slate.
   one a user's theme file asks for, because that file's author sees the colors
   it dims. `tuitheme/default.json` never sets it.
 - **The theme file format only grows.** Programs released long ago read files
-  written today, so a reader ignores a group or key it does not know, and a key
-  added later is optional. A change an older reader cannot read, such as a new
-  value form, is a new schema file and URL beside `tuitheme/schema/v1.json`,
-  never an edit to it. A key added to the schema gets its value in
-  `tuitheme/default.json` in the same change, unless it falls back along its
-  dots to one there.
+  written today, so a reader ignores a group, key or style field it does not
+  know, and a key added later is optional. An older reader fails the whole load
+  on a value it cannot read, so a new value form goes in a new key or style
+  field, never in place of an old one. A change that cannot be added that way
+  is a new file beside `current.json`, with a schema beside
+  `tuitheme/schema/v1.json`, and a generator writes both. A key added to the
+  schema gets its value in `tuitheme/default.json` in the same change, unless it
+  falls back along its dots to one there, and `tuitheme/schema_test.go` fails
+  until it does. datapointchris/theme's generator types the `ui` and `markdown`
+  keys out again, and its suite compares them with the published schema, so a
+  new key lands there too.
 - **Color resolves once, and only where it will be rendered.** `NO_COLOR`
   outranks `FORCE_COLOR`: the first is the user's preference, the second only
   overrides the terminal detection.
