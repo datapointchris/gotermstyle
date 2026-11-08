@@ -221,12 +221,23 @@ above the commands.
 ```go
 import "github.com/datapointchris/gotermstyle/tuitheme"
 
-path := tuitheme.DefaultPath()
-theme, err := tuitheme.Load(path)                      // a missing file is the built-in default
+path, err := tuitheme.DefaultPath()
+if err != nil {
+    return err
+}
+theme, err := tuitheme.Load(path) // a missing file is the built-in default, with no error
+if err != nil {
+    log.Print(err) // theme is the built-in default, so the screen still draws
+}
 fmt.Println(pal.Paint(theme.Code("ui.selection"), row)) // pal is a gotermstyle.Palette
 
 reloads := make(chan os.Signal, 1)
 tuitheme.Notify(reloads) // SIGUSR2 asks for the file again
+for range reloads {
+    if next, err := tuitheme.Load(path); err == nil {
+        theme = next // on an error, keep drawing the theme on screen
+    }
+}
 ```
 
 The 16 terminal colors hold no shade near the background, so a selected row
@@ -259,11 +270,16 @@ field.
   default, [`tuitheme/default.json`](tuitheme/default.json).
 - **The built-in default is written in palette slots.** A program with no theme
   file draws in the terminal's own 16 colors.
-- **A group or key the reader does not know is ignored**, so a newer file never
-  breaks an older program. A value of neither form fails the load, and the
-  error names its key.
-- **`DefaultPath` is `$XDG_CONFIG_HOME/tui-theme/current.json`**, or
-  `~/.config/tui-theme/current.json`. A program may load another path.
+- **A group, key or style field the reader does not know is ignored**, so a
+  newer file never breaks an older program. A value of neither form fails the
+  load, and the error names its key. `null` and `""` are neither form.
+- **`DefaultPath` is `$TUI_THEME_FILE` when set**, else
+  `$XDG_CONFIG_HOME/tui-theme/current.json`, else
+  `~/.config/tui-theme/current.json`. `TUI_THEME_FILE` points every program at
+  another file at once, such as a theme under test.
+- **`Load` always returns a theme to draw.** On an error it is the built-in
+  default, so a program starting up draws the terminal's 16 colors and reports
+  the error. A program reloading keeps the theme it has.
 - **`Code` is one SGR sequence opening with a reset**, as the house palette's
   codes do. An exact color is 24-bit, which most terminals and tmux with its
   `RGB` feature render.

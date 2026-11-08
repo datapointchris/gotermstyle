@@ -15,16 +15,30 @@
 // default. The default is written in palette slots, so a program with no theme
 // file draws in the terminal's own 16 colors.
 //
-// Load a theme once, paint each role through a gotermstyle.Palette, and load it
-// again when Notify relays a reload:
+// Every program finds the same file through DefaultPath. TUI_THEME_FILE points
+// them all at another one, such as a theme under test.
 //
-//	path := tuitheme.DefaultPath()
+// Load a theme once, paint each role through a gotermstyle.Palette, and load it
+// again when Notify relays a reload. Load always returns a theme to draw. On an
+// error it is the built-in default, and a program reloading keeps its own:
+//
+//	path, err := tuitheme.DefaultPath()
+//	if err != nil {
+//		return err
+//	}
 //	theme, err := tuitheme.Load(path)
+//	if err != nil {
+//		log.Print(err) // theme is the built-in default
+//	}
 //	fmt.Println(pal.Paint(theme.Code("ui.selection"), row))
 //
 //	reloads := make(chan os.Signal, 1)
 //	tuitheme.Notify(reloads)
-//	<-reloads // then Load(path) again
+//	for range reloads {
+//		if next, err := tuitheme.Load(path); err == nil {
+//			theme = next
+//		}
+//	}
 //
 // A Theme never changes once loaded, so it is safe to share between goroutines.
 package tuitheme
@@ -60,18 +74,26 @@ func Default() *Theme {
 	return &Theme{}
 }
 
-// DefaultPath is where a theme generator installs the current theme:
-// $XDG_CONFIG_HOME/tui-theme/current.json, or ~/.config/tui-theme/current.json.
-func DefaultPath() string {
+// PathEnv names the variable that points every program at another theme file.
+const PathEnv = "TUI_THEME_FILE"
+
+// DefaultPath is the theme file a program loads: $TUI_THEME_FILE when set, else
+// $XDG_CONFIG_HOME/tui-theme/current.json, else ~/.config/tui-theme/current.json.
+// A theme generator installs the current theme at the XDG path. A relative
+// XDG_CONFIG_HOME is ignored, as the XDG spec asks.
+func DefaultPath() (string, error) {
+	if path := os.Getenv(PathEnv); path != "" {
+		return path, nil
+	}
 	dir := os.Getenv("XDG_CONFIG_HOME")
 	if !filepath.IsAbs(dir) {
 		home, err := os.UserHomeDir()
 		if err != nil {
-			return ""
+			return "", fmt.Errorf("tuitheme: no theme file: %s is unset and %w", PathEnv, err)
 		}
 		dir = filepath.Join(home, ".config")
 	}
-	return filepath.Join(dir, "tui-theme", "current.json")
+	return filepath.Join(dir, "tui-theme", "current.json"), nil
 }
 
 // Load reads the theme file at path, and always returns a theme to draw. A file
