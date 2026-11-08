@@ -60,6 +60,16 @@ func (c Color) RGB() (r, g, b uint8, ok bool) {
 	return c.r, c.g, c.b, c.kind == rgb
 }
 
+// BackgroundCode is an SGR sequence setting this color as the background and
+// nothing else, so it can be laid over another code without resetting its
+// foreground. An unset color is "".
+func (c Color) BackgroundCode() string {
+	if params := c.sgr(40); params != "" {
+		return "\033[" + params + "m"
+	}
+	return ""
+}
+
 // sgr is the color's SGR parameters, where base is 30 for a foreground and 40
 // for a background.
 func (c Color) sgr(base int) string {

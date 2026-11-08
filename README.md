@@ -285,6 +285,9 @@ editor validates and completes a file against it through `$schema`.
 - **`Code` is one SGR sequence opening with a reset**, as the house palette's
   codes do. An exact color is 24-bit, which most terminals and tmux with its
   `RGB` feature render.
+- **`Color.BackgroundCode` sets a background alone, with no reset**, so a
+  program can lay a selection's background under cells that keep their own
+  colors.
 - **`dim` is drawn when a file asks for it.** The built-in default never does.
 
 `Notify` relays SIGUSR2 on unix and nothing elsewhere. The program loads the
