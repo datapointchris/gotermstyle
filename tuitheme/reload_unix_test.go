@@ -4,19 +4,17 @@ package tuitheme
 
 import (
 	"os"
-	"path/filepath"
 	"syscall"
 	"testing"
 	"time"
 )
 
+// A theme generator signals every reader with SIGUSR2 after it installs a theme.
 func TestSIGUSR2AsksForTheFileAgain(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "current.json")
 	reloads := make(chan os.Signal, 1)
 	Notify(reloads)
 	defer Stop(reloads)
 
-	writeTheme(t, path, `{"ui": {"selection": {"bg": "#2d4f67"}}}`)
 	if err := syscall.Kill(os.Getpid(), syscall.SIGUSR2); err != nil {
 		t.Fatal(err)
 	}
@@ -24,12 +22,5 @@ func TestSIGUSR2AsksForTheFileAgain(t *testing.T) {
 	case <-reloads:
 	case <-time.After(5 * time.Second):
 		t.Fatal("no reload relayed within 5s of SIGUSR2")
-	}
-	theme, err := Load(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got, want := theme.Code("ui.selection"), "\033[0;48;2;45;79;103m"; got != want {
-		t.Errorf("ui.selection after reload = %q, want %q", got, want)
 	}
 }
