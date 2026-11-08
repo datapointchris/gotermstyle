@@ -104,7 +104,10 @@
         "punctuation": { "description": "Brackets, delimiters and separators.", "$ref": "#/definitions/value" },
         "attribute": { "description": "Attributes, annotations and decorators.", "$ref": "#/definitions/value" },
         "variable": { "description": "Variable names.", "$ref": "#/definitions/value" },
-        "tag": { "description": "Markup tags, such as HTML elements.", "$ref": "#/definitions/value" }
+        "tag": { "description": "Markup tags, such as HTML elements.", "$ref": "#/definitions/value" },
+        "diff.plus": { "description": "A diff's added lines.", "$ref": "#/definitions/value" },
+        "diff.minus": { "description": "A diff's removed lines.", "$ref": "#/definitions/value" },
+        "diff.delta": { "description": "A diff's changed lines.", "$ref": "#/definitions/value" }
       },
       "propertyNames": { "pattern": "^[a-z][a-z0-9_-]*(\\.[a-z0-9_-]+)*$" },
       "additionalProperties": { "$ref": "#/definitions/value" }

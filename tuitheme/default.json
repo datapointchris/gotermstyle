@@ -47,6 +47,9 @@
     "punctuation": {},
     "attribute": "14",
     "variable": {},
-    "tag": "12"
+    "tag": "12",
+    "diff.plus": "10",
+    "diff.minus": "9",
+    "diff.delta": "11"
   }
 }
