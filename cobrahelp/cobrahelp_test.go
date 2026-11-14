@@ -58,10 +58,7 @@ Flags:
 
 ` + "`lab <command> --help`" + ` shows a command's flags and examples.
 `},
-		{[]string{"trips", "list", "--help"}, `lab trips list — List every trip
-
-Usage:
-  lab trips list [flags]
+		{[]string{"import", "--help"}, `lab import <file> [--replace-every-stop-already-recorded] — Import trips
 
 Flags:
       --json   Emit JSON

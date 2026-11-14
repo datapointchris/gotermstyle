@@ -11,10 +11,10 @@
 // command's children.
 //
 // The renderer replaces cobra's help and usage templates rather than swapping
-// their command rows. Cobra's template gives a namespace a
-// `Usage: <cmd> [command]` block, which a first-time user reads as the answer,
-// and puts the examples above the commands. This screen has no such block and
-// lists the commands first.
+// their command rows. Cobra's template gives every screen a Usage block, which
+// on a namespace reads `<cmd> [command]` and on a leaf repeats what was typed,
+// and puts the examples above the commands. This screen has no Usage block. Its
+// title line is the command with its arguments, and the commands come first.
 //
 // Everything a screen shows comes from the tree. A section is a group the
 // command declares with AddGroup, in the order it adds them, and a command
@@ -49,21 +49,14 @@ func Install(root *cobra.Command) {
 
 func write(out io.Writer, cmd *cobra.Command) {
 	var b strings.Builder
-	fmt.Fprintf(&b, "%s — %s\n", cmd.CommandPath(), cmd.Short)
+	// The title is the command as typed, arguments included, so no screen
+	// needs a Usage block. The flags have a section of their own.
+	fmt.Fprintf(&b, "%s — %s\n", strings.ReplaceAll(cmd.UseLine(), " [flags]", ""), cmd.Short)
 	if long := strings.TrimSpace(cmd.Long); long != "" {
 		fmt.Fprintf(&b, "\n%s\n", long)
 	}
 	sections := commandSections(cmd)
 	flags := flagUsages(cmd)
-	if len(sections) == 0 {
-		// Cobra counts --help when it decides whether to add [flags], so a
-		// command taking no other flag would promise some and list none.
-		use := cmd.UseLine()
-		if flags == "" {
-			use = strings.TrimSuffix(use, " [flags]")
-		}
-		fmt.Fprintf(&b, "\nUsage:\n  %s\n", use)
-	}
 	// Each section sizes its own column from the command lines that fit in
 	// maxCommandColumn, so one long line does not push every description past
 	// helpWidth. A longer line sits alone, with its description beneath.
