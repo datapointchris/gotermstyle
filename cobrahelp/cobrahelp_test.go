@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func tree() *cobra.Command {
+func tree(options ...Option) *cobra.Command {
 	run := func(*cobra.Command, []string) {}
 	root := &cobra.Command{Use: "lab", Short: "Small experiments", Long: "Every experiment is a trip with stops."}
 	root.AddGroup(&cobra.Group{ID: "plan", Title: "Planning commands:"})
@@ -28,7 +28,7 @@ func tree() *cobra.Command {
 	)
 	root.CompletionOptions.DisableDefaultCmd = true
 	root.PersistentFlags().Bool("json", false, "Emit JSON")
-	Install(root)
+	Install(root, options...)
 	return root
 }
 
@@ -36,10 +36,11 @@ func tree() *cobra.Command {
 // that installs it shares.
 func TestEveryScreenListsLeavesUnderTheirGroupsAndWrapsAtEighty(t *testing.T) {
 	cases := []struct {
-		args []string
-		want string
+		args    []string
+		options []Option
+		want    string
 	}{
-		{[]string{"--help"}, `lab — Small experiments
+		{[]string{"--help"}, nil, `lab — Small experiments
 
 Every experiment is a trip with stops.
 
@@ -58,14 +59,43 @@ Flags:
 
 ` + "`lab <command> --help`" + ` shows a command's flags and examples.
 `},
-		{[]string{"import", "--help"}, `lab import <file> [--replace-every-stop-already-recorded] — Import trips
+		{[]string{"import", "--help"}, nil, `lab import <file> [--replace-every-stop-already-recorded] — Import trips
 
 Flags:
       --json   Emit JSON
 `},
+		{[]string{"--help"}, []Option{NamespacesOnRoot()}, `lab — Small experiments
+
+Every experiment is a trip with stops.
+
+Planning commands:
+  trips <command>  Trips
+  import <file> [--replace-every-stop-already-recorded]
+                   Import trips
+
+Other commands:
+  version  Print the version
+
+Flags:
+      --json   Emit JSON
+
+` + "`lab <command> --help`" + ` shows a command's flags and examples.
+`},
+		{[]string{"trips", "--help"}, []Option{NamespacesOnRoot()}, `lab trips — Trips
+
+Commands:
+  list       List every trip
+  show <id>  Show one trip with every stop it makes, the days between them, and
+             what each stop costs
+
+Flags:
+      --json   Emit JSON
+
+` + "`lab trips <command> --help`" + ` shows a command's flags and examples.
+`},
 	}
 	for _, c := range cases {
-		root := tree()
+		root := tree(c.options...)
 		var out bytes.Buffer
 		root.SetOut(&out)
 		root.SetArgs(c.args)

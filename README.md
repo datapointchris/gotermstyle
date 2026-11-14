@@ -218,6 +218,12 @@ puts the examples above the commands. No screen here has a Usage block. The
 title line is the command with its arguments, `lab import <file> — Import
 trips`, and the flags have their own section.
 
+A tree with hundreds of leaves puts hundreds of rows on its root.
+`cobrahelp.Install(root, cobrahelp.NamespacesOnRoot())` draws the root with
+one row per command beneath it instead, a namespace as `trips <command>`
+beside its own description. Every other screen still lists every leaf beneath
+it.
+
 ## `tuitheme` — every terminal UI reads its colors from one theme file
 
 ```go

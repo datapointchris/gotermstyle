@@ -1,7 +1,8 @@
 // Package cobrahelp renders every help screen of a cobra command tree: what
 // the command is, then every leaf beneath it, spelled from the screen's own
 // command down to the leaf with its arguments, then its examples and flags. A
-// command with children gets no row, even one that runs.
+// command with children gets no row, even one that runs. NamespacesOnRoot
+// lists the root's namespaces as rows instead, for a tree too large for that.
 //
 // Cobra's own screen names only the next word down, so a command three levels
 // down is three screens away, each ending in `[command]`. Listing the leaves
@@ -38,16 +39,33 @@ import (
 // command is reached for, so Install turns off cobra's alphabetical sorting.
 // That setting is cobra's and process-wide: every command tree in the process
 // loses alphabetical sorting, not only root's.
-func Install(root *cobra.Command) {
+func Install(root *cobra.Command, options ...Option) {
+	var s settings
+	for _, option := range options {
+		option(&s)
+	}
 	cobra.EnableCommandSorting = false
-	root.SetHelpFunc(func(cmd *cobra.Command, _ []string) { write(cmd.OutOrStdout(), cmd) })
+	root.SetHelpFunc(func(cmd *cobra.Command, _ []string) { write(cmd.OutOrStdout(), cmd, s) })
 	root.SetUsageFunc(func(cmd *cobra.Command) error {
-		write(cmd.OutOrStderr(), cmd)
+		write(cmd.OutOrStderr(), cmd, s)
 		return nil
 	})
 }
 
-func write(out io.Writer, cmd *cobra.Command) {
+// Option changes how Install draws a tree's screens.
+type Option func(*settings)
+
+type settings struct{ namespacesOnRoot bool }
+
+// NamespacesOnRoot draws the root screen with one row per command beneath it,
+// a namespace as `<name> <command>` beside its own description, rather than
+// every leaf in the tree. Every other screen still lists every leaf beneath
+// it. It is for a tree whose leaves are too many to read on one screen.
+func NamespacesOnRoot() Option {
+	return func(s *settings) { s.namespacesOnRoot = true }
+}
+
+func write(out io.Writer, cmd *cobra.Command, s settings) {
 	var b strings.Builder
 	// The title is the command as typed, arguments included, so no screen
 	// needs a Usage block. The flags have a section of their own.
@@ -55,7 +73,11 @@ func write(out io.Writer, cmd *cobra.Command) {
 	if long := strings.TrimSpace(cmd.Long); long != "" {
 		fmt.Fprintf(&b, "\n%s\n", long)
 	}
-	sections := commandSections(cmd)
+	rows := func(cmds []*cobra.Command) []row { return leafRows(cmd, cmds) }
+	if s.namespacesOnRoot && !cmd.HasParent() {
+		rows = namespaceRows
+	}
+	sections := commandSections(cmd, rows)
 	flags := flagUsages(cmd)
 	// Each section sizes its own column from the command lines that fit in
 	// maxCommandColumn, so one long line does not push every description past
@@ -102,14 +124,14 @@ type section struct {
 // it has them. A namespace's commands sit under the group the namespace is in.
 // A group's title is its own, less a trailing colon; the two this supplies,
 // "Commands" and "Other commands", follow cobra's own heading.
-func commandSections(cmd *cobra.Command) []section {
+func commandSections(cmd *cobra.Command, rows func([]*cobra.Command) []row) []section {
 	children := typeable(cmd)
 	if len(children) == 0 {
 		return nil
 	}
 	groups := cmd.Groups()
 	if len(groups) == 0 {
-		return []section{{title: "Commands", rows: leafRows(cmd, children)}}
+		return []section{{title: "Commands", rows: rows(children)}}
 	}
 	var sections []section
 	for _, group := range groups {
@@ -120,7 +142,7 @@ func commandSections(cmd *cobra.Command) []section {
 			}
 		}
 		if len(in) > 0 {
-			sections = append(sections, section{title: strings.TrimSuffix(group.Title, ":"), rows: leafRows(cmd, in)})
+			sections = append(sections, section{title: strings.TrimSuffix(group.Title, ":"), rows: rows(in)})
 		}
 	}
 	var rest []*cobra.Command
@@ -130,7 +152,7 @@ func commandSections(cmd *cobra.Command) []section {
 		}
 	}
 	if len(rest) > 0 {
-		sections = append(sections, section{title: "Other commands", rows: leafRows(cmd, rest)})
+		sections = append(sections, section{title: "Other commands", rows: rows(rest)})
 	}
 	return sections
 }
@@ -158,6 +180,20 @@ func leafRows(screen *cobra.Command, cmds []*cobra.Command) []row {
 			continue
 		}
 		line := strings.TrimPrefix(cmd.Parent().CommandPath()+" "+cmd.Use, screen.CommandPath()+" ")
+		rows = append(rows, row{line: line, short: cmd.Short})
+	}
+	return rows
+}
+
+// namespaceRows is one row per command in cmds: a leaf with its arguments,
+// and a namespace as `<name> <command>` beside its own description.
+func namespaceRows(cmds []*cobra.Command) []row {
+	var rows []row
+	for _, cmd := range cmds {
+		line := cmd.Use
+		if len(typeable(cmd)) > 0 {
+			line = cmd.Name() + " <command>"
+		}
 		rows = append(rows, row{line: line, short: cmd.Short})
 	}
 	return rows
