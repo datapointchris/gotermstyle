@@ -11,10 +11,8 @@ not as a blank slate.
 ## Constraints that must not regress
 
 - **The root package imports the standard library alone — this repo's own
-  choice.** The general rule for a Go library is *containment*: a CLI frontend
-  lives in its own package so a consumer importing only the core inherits
-  nothing. `cobrahelp/` is that frontend. It is the one package that imports
-  cobra and pflag, and the only requirements in `go.mod` are its. A tool
+  choice.** `cobrahelp/` is the cobra frontend. It is the one package that
+  imports cobra and pflag, and the only requirements in `go.mod` are its. A tool
   importing the root package compiles neither. `tuitheme/` imports the standard
   library alone as well.
 
@@ -29,14 +27,8 @@ not as a blank slate.
   handles and this does not. That is a deliberate acceptance, not an oversight.
   Reach for `lipgloss` in a repo that needs real layout rather than pretending
   this competes.
-- **The `go.mod` floor is a statement about who may import this, not the lowest
-  version the code needs.** Raising it excludes callers, because `go get` raises
-  an importer's `go` line to match. So a standard-library advisory moves the
-  `toolchain` line, never the floor. The floor also has a bottom: CI sets up the
-  Go the `toolchain` line names, or the floor where there is none, under
-  `GOTOOLCHAIN=local`, and golangci-lint refuses to run on a Go below its own
-  minimum. A floor below that bottom with no `toolchain` line above it fails
-  Lint while the code is fine.
+- **This is a library, so its `go` line is every importer's floor.** A
+  standard-library advisory moves the `toolchain` line, never the floor.
 - **The palette matches the Python and bash libraries.** The exact codes are
   pytermstyle's constants and the bash library's `colors.sh`; the README's
   "Relationship to the other two" says where each lives. Changing one without
