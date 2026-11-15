@@ -23,9 +23,9 @@
 //
 // # Dependencies
 //
-// None in this package, and that is a constraint rather than a coincidence.
-// Terminal detection is os.Stat plus os.ModeCharDevice, not golang.org/x/term,
-// so a tool importing this package builds no other module. The subpackage
+// None in this package, and that is a constraint rather than a coincidence: a
+// tool importing this package builds no other module. [Enabled] says how
+// terminal detection stays inside the standard library. The subpackage
 // cobrahelp is the cobra frontend, kept apart so cobra reaches only a tool
 // that imports it. The module's go.mod names cobra for cobrahelp, so an
 // importer's module graph lists cobra while its build compiles none of it.
@@ -51,23 +51,19 @@
 //
 //	s.HelpEnd()
 //
-// HelpRow buffers rather than writing, so the flush sizes the description
-// column from the longest row in the section. No call site passes a width or a
-// color. Use HelpText rather than writing directly for prose between rows, so
-// pending rows flush ahead of it.
+// No call site passes a width or a color; [Screen.HelpRow] says why it buffers.
+// Use HelpText rather than writing directly for prose between rows, so pending
+// rows flush ahead of it.
 //
 // For output that is not a help screen, Palette paints and Clip fits:
 //
 //	p := gotermstyle.PaletteFor(os.Stdout)
 //	fmt.Println(p.Cyan(name), p.Command(path))
 //
-// # Where the state lives, and why it differs from the Python
+// # Where the state lives
 //
-// pytermstyle and formatting.sh keep the buffered rows and the section counter
-// in globals, which is affordable in a one-shot CLI and costs pytermstyle a
-// reset helper its tests have to call. Go runs its tests in one process and its
-// programs concurrently, so that state lives on a Screen here. The rendered
-// screen is the same; only the state's owner differs.
+// The buffered rows and the section counter live on a [Screen] rather than in
+// globals as in pytermstyle and formatting.sh; [Screen] says why.
 //
 // The libraries that were considered and rejected, and why, are in the README.
 package gotermstyle
