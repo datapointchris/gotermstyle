@@ -1,8 +1,9 @@
 // Package cobrahelp renders every help screen of a cobra command tree: what
 // the command is, then every leaf beneath it, spelled from the screen's own
 // command down to the leaf with its arguments, then its examples and flags. A
-// command with children gets no row, even one that runs. NamespacesOnRoot
-// lists the root's namespaces as rows instead, for a tree too large for that.
+// command with children gets no row, even one that runs. Under NamespacesOnRoot
+// the root screen gives each of its own commands one row instead, so a tree
+// with hundreds of leaves does not list them all there.
 //
 // Cobra's own screen names only the next word down, so a command three levels
 // down is three screens away, each ending in `[command]`. Listing the leaves
@@ -12,10 +13,11 @@
 // command's children.
 //
 // The renderer replaces cobra's help and usage templates rather than swapping
-// their command rows. Cobra's template gives every screen a Usage block, which
-// on a namespace reads `<cmd> [command]` and on a leaf repeats what was typed,
-// and puts the examples above the commands. This screen has no Usage block. Its
-// title line is the command with its arguments, and the commands come first.
+// their command rows. Cobra's template gives every screen a Usage block, and
+// puts the examples above the commands. On a namespace the block reads
+// `<cmd> [command]`, and on a leaf it repeats what was typed. This screen has
+// no Usage block. Its title line is the command with its arguments, and the
+// commands come first.
 //
 // Everything a screen shows comes from the tree. A section is a group the
 // command declares with AddGroup, in the order it adds them, and a command
@@ -67,8 +69,8 @@ func NamespacesOnRoot() Option {
 
 func write(out io.Writer, cmd *cobra.Command, s settings) {
 	var b strings.Builder
-	// The title is the command as typed, arguments included, so no screen
-	// needs a Usage block. The flags have a section of their own.
+	// UseLine appends " [flags]" whenever the command has a flag, --help
+	// included. The flags have a section of their own, so the title drops it.
 	fmt.Fprintf(&b, "%s — %s\n", strings.ReplaceAll(cmd.UseLine(), " [flags]", ""), cmd.Short)
 	if long := strings.TrimSpace(cmd.Long); long != "" {
 		fmt.Fprintf(&b, "\n%s\n", long)

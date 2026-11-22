@@ -212,9 +212,9 @@ wrap at 80 columns, and a command line wider than 40 sits alone with its
 description beneath.
 
 It replaces cobra's help and usage templates outright rather than patching
-their rows. Cobra's template gives every screen a Usage block, which on a
-namespace reads `<cmd> [command]` and on a leaf repeats what was typed, and
-puts the examples above the commands. No screen here has a Usage block. The
+their rows. Cobra's template gives every screen a Usage block, and puts the
+examples above the commands. On a namespace the block reads `<cmd> [command]`,
+and on a leaf it repeats what was typed. No screen here has a Usage block. The
 title line is the command with its arguments, `lab import <file> — Import
 trips`, and the flags have their own section.
 
