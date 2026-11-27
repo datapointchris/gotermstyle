@@ -2,9 +2,11 @@ package cobrahelp
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 func tree(options ...Option) *cobra.Command {
@@ -33,8 +35,13 @@ func tree(options ...Option) *cobra.Command {
 }
 
 // A screen is pinned whole, because its layout is the contract every tool
-// that installs it shares.
+// that installs it shares. The flag lines are the exception. pflag draws
+// them, so each screen expects whatever pflag draws for the one flag the tree
+// declares, and a change to pflag's layout leaves this test passing.
 func TestEveryScreenListsLeavesUnderTheirGroupsAndWrapsAtEighty(t *testing.T) {
+	declared := pflag.NewFlagSet("lab", pflag.ContinueOnError)
+	declared.Bool("json", false, "Emit JSON")
+	flags := strings.TrimRight(declared.FlagUsagesWrapped(80), "\n")
 	cases := []struct {
 		args    []string
 		options []Option
@@ -55,14 +62,14 @@ Other commands:
   version  Print the version
 
 Flags:
-      --json   Emit JSON
+` + flags + `
 
 ` + "`lab <command> --help`" + ` shows a command's flags and examples.
 `},
 		{[]string{"import", "--help"}, nil, `lab import <file> [--replace-every-stop-already-recorded] — Import trips
 
 Flags:
-      --json   Emit JSON
+` + flags + `
 `},
 		{[]string{"--help"}, []Option{NamespacesOnRoot()}, `lab — Small experiments
 
@@ -77,7 +84,7 @@ Other commands:
   version  Print the version
 
 Flags:
-      --json   Emit JSON
+` + flags + `
 
 ` + "`lab <command> --help`" + ` shows a command's flags and examples.
 `},
@@ -89,7 +96,7 @@ Commands:
              what each stop costs
 
 Flags:
-      --json   Emit JSON
+` + flags + `
 
 ` + "`lab trips <command> --help`" + ` shows a command's flags and examples.
 `},
